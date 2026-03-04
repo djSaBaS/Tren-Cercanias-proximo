@@ -24,8 +24,6 @@
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       }
     </style>
-
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   </head>
 
   <body>
@@ -62,24 +60,32 @@
     </main>
 
     <script>
-      const GTFS_ZIP_URL = "https://ssl.renfe.com/ftransit/Fichero_CER_FOMENTO/fomento_transit.zip";
+      // =========================
+      // ENDPOINTS RENFE GTFS-RT
+      // =========================
       const TRIP_UPDATES_URL = "https://gtfsrt.renfe.com/trip_updates.json";
       const VEHICLE_POSITIONS_URL = "https://gtfsrt.renfe.com/vehicle_positions.json";
 
+      // =========================
+      // CONFIG
+      // =========================
       const REFRESH_MS = 60_000;
       const CLOCK_MS = 500;
+
+      // Subimos el timeout: los feeds pueden tardar.
+      const TIMEOUT_TRIP_UPDATES_MS = 25_000;
+      const TIMEOUT_VEHICLES_MS = 25_000;
+
+      // Esta parte sigue siendo “rápida” (sin GTFS ZIP). OJO: estos IDs pueden NO ser los stop_id reales.
+      const DEFAULT_STOP_ID_ATOCHA = "18000";
+      const DEFAULT_STOP_ID_CHAMARTIN = "17000";
 
       const STATION_NAME_ATOCHA = "Madrid-Puerta de Atocha";
       const STATION_NAME_CHAMARTIN = "Madrid-Chamartín";
 
-      const STOP_NAME_HINTS_ATOCHA = ["ATOCHA", "MADRID-ATOCHA", "PUERTA DE ATOCHA"];
-      const STOP_NAME_HINTS_CHAMARTIN = ["CHAMARTIN", "MADRID-CHAMARTIN", "CLARA CAMPOAMOR"];
-
-      const DEFAULT_STOP_ID_ATOCHA = "18000";
-      const DEFAULT_STOP_ID_CHAMARTIN = "17000";
-
-      const MAX_FAST_START_MS = 8000;
-
+      // =========================
+      // DOM
+      // =========================
       const clockEl = document.getElementById("clock");
       const statusEl = document.getElementById("status");
       const stationTitleEl = document.getElementById("stationTitle");
@@ -93,10 +99,9 @@
 
       let isUpdating = false;
 
-      let cachedStops = null;
-      let cachedStopIdAtocha = DEFAULT_STOP_ID_ATOCHA;
-      let cachedStopIdChamartin = DEFAULT_STOP_ID_CHAMARTIN;
-
+      // =========================
+      // UI helpers
+      // =========================
       function setAlert(message) {
         if (!message) {
           alertBoxEl.classList.add("d-none");
@@ -126,186 +131,56 @@
         clockEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
       }
 
+      // =========================
+      // Time mode
+      // =========================
       function getModeByTime(now) {
         const h = now.getHours();
         const m = now.getMinutes();
 
         if (h < 12 || (h === 12 && m === 0)) {
-          return { stationTitle: STATION_NAME_ATOCHA, originKey: "ATOCHA", destKey: "CHAMARTIN" };
+          return { stationTitle: STATION_NAME_ATOCHA, originId: DEFAULT_STOP_ID_ATOCHA, destId: DEFAULT_STOP_ID_CHAMARTIN };
         }
-        return { stationTitle: STATION_NAME_CHAMARTIN, originKey: "CHAMARTIN", destKey: "ATOCHA" };
+        return { stationTitle: STATION_NAME_CHAMARTIN, originId: DEFAULT_STOP_ID_CHAMARTIN, destId: DEFAULT_STOP_ID_ATOCHA };
       }
 
-      function withTimeout(promise, ms, label) {
-        return Promise.race([
-          promise,
-          new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout (${label}) tras ${ms}ms`)), ms)),
-        ]);
+      // =========================
+      // Fetch con AbortController + fallback CORS
+      // =========================
+      async function fetchJson(url, timeoutMs) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+          const res = await fetch(url, { cache: "no-store", signal: controller.signal });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          return await res.json();
+        } finally {
+          clearTimeout(timeoutId);
+        }
       }
 
-      async function fetchJsonWithFallback(url) {
-        const attempts = [
-          { type: "direct", buildUrl: (u) => u },
-          { type: "allorigins", buildUrl: (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
-        ];
-
-        let lastErr = null;
-
-        for (const attempt of attempts) {
+      async function fetchJsonWithFallback(url, timeoutMs) {
+        // 1) Intento directo (si hay CORS permitido y va rápido)
+        try {
+          return { data: await fetchJson(url, timeoutMs), via: "direct" };
+        } catch (e1) {
+          // 2) Fallback por AllOrigins (suele funcionar en GitHub Pages)
+          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
           try {
-            const res = await fetch(attempt.buildUrl(url), { cache: "no-store" });
-            if (!res.ok) {
-              throw new Error(`HTTP ${res.status}`);
-            }
-            const data = await res.json();
-            return { data, via: attempt.type };
-          } catch (e) {
-            lastErr = e;
-            continue;
+            return { data: await fetchJson(proxyUrl, timeoutMs), via: "allorigins" };
+          } catch (e2) {
+            const msg = `Direct: ${String(e1?.message || e1)} | Proxy: ${String(e2?.message || e2)}`;
+            throw new Error(`No se pudo obtener JSON. ${msg}`);
           }
         }
-
-        throw new Error(`No se pudo obtener JSON (CORS/red). Detalle: ${String(lastErr?.message || lastErr)}`);
       }
 
-      async function fetchArrayBufferWithFallback(url) {
-        const attempts = [
-          { type: "direct", buildUrl: (u) => u },
-          { type: "allorigins", buildUrl: (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
-        ];
-
-        let lastErr = null;
-
-        for (const attempt of attempts) {
-          try {
-            const res = await fetch(attempt.buildUrl(url), { cache: "no-store" });
-            if (!res.ok) {
-              throw new Error(`HTTP ${res.status}`);
-            }
-            const buffer = await res.arrayBuffer();
-            return { buffer, via: attempt.type };
-          } catch (e) {
-            lastErr = e;
-            continue;
-          }
-        }
-
-        throw new Error(`No se pudo obtener ZIP (CORS/red). Detalle: ${String(lastErr?.message || lastErr)}`);
-      }
-
-      function parseCsvLine(line) {
-        const result = [];
-        let current = "";
-        let inQuotes = false;
-
-        for (let i = 0; i < line.length; i++) {
-          const ch = line[i];
-
-          if (ch === '"') {
-            if (inQuotes && line[i + 1] === '"') {
-              current += '"';
-              i++;
-              continue;
-            }
-            inQuotes = !inQuotes;
-            continue;
-          }
-
-          if (ch === "," && !inQuotes) {
-            result.push(current);
-            current = "";
-            continue;
-          }
-
-          current += ch;
-        }
-
-        result.push(current);
-        return result;
-      }
-
-      function parseStopsTxt(stopsText) {
-        const lines = stopsText.split(/\r?\n/).filter((l) => l.trim().length > 0);
-        if (lines.length < 2) {
-          return [];
-        }
-
-        const headers = parseCsvLine(lines[0]).map((h) => h.trim());
-        const idxStopId = headers.indexOf("stop_id");
-        const idxStopName = headers.indexOf("stop_name");
-
-        if (idxStopId === -1 || idxStopName === -1) {
-          return [];
-        }
-
-        const stops = [];
-        for (let i = 1; i < lines.length; i++) {
-          const cols = parseCsvLine(lines[i]);
-          const stopId = (cols[idxStopId] || "").trim();
-          const stopName = (cols[idxStopName] || "").trim();
-          if (stopId && stopName) {
-            stops.push({ stopId, stopName });
-          }
-        }
-
-        return stops;
-      }
-
-      function findStopIdByHints(stops, hints) {
-        const upperHints = hints.map((h) => String(h).toUpperCase());
-
-        const scored = stops
-          .map((s) => {
-            const nameU = s.stopName.toUpperCase();
-            const hits = upperHints.reduce((acc, h) => (nameU.includes(h) ? acc + 1 : acc), 0);
-            return { ...s, hits };
-          })
-          .filter((x) => x.hits > 0)
-          .sort((a, b) => b.hits - a.hits);
-
-        return scored.length ? scored[0].stopId : null;
-      }
-
-      async function loadStopsFromZipIfPossible() {
-        if (cachedStops && cachedStopIdAtocha && cachedStopIdChamartin) {
-          return { via: "cache" };
-        }
-
-        if (typeof window.JSZip === "undefined") {
-          throw new Error("JSZip no está disponible (bloqueado por el editor online o CDN).");
-        }
-
-        statusEl.textContent = "Cargando paradas (GTFS ZIP)…";
-
-        const zipFetch = await withTimeout(fetchArrayBufferWithFallback(GTFS_ZIP_URL), 15000, "GTFS ZIP");
-        const zip = await JSZip.loadAsync(zipFetch.buffer);
-
-        const stopsFile = zip.file("stops.txt");
-        if (!stopsFile) {
-          throw new Error("El ZIP GTFS no contiene stops.txt");
-        }
-
-        const stopsText = await stopsFile.async("string");
-        const stops = parseStopsTxt(stopsText);
-
-        if (!stops.length) {
-          throw new Error("No se pudo parsear stops.txt (vacío o formato inesperado).");
-        }
-
-        const stopIdAtocha = findStopIdByHints(stops, STOP_NAME_HINTS_ATOCHA);
-        const stopIdChamartin = findStopIdByHints(stops, STOP_NAME_HINTS_CHAMARTIN);
-
-        if (!stopIdAtocha || !stopIdChamartin) {
-          throw new Error("No se han podido localizar Atocha/Chamartín en stops.txt por nombre.");
-        }
-
-        cachedStops = stops;
-        cachedStopIdAtocha = stopIdAtocha;
-        cachedStopIdChamartin = stopIdChamartin;
-
-        return { via: zipFetch.via };
-      }
-
+      // =========================
+      // GTFS-RT helpers
+      // =========================
       function epochNowSeconds() {
         return Math.floor(Date.now() / 1000);
       }
@@ -316,40 +191,6 @@
         }
         const d = new Date(Number(epochSeconds) * 1000);
         return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-      }
-
-      function extractPlatformFromLabel(label) {
-        const raw = String(label || "");
-        const match = raw.match(/PLATF\.\((\d+)\)/i);
-        return match ? match[1] : "";
-      }
-
-      function extractLineFromLabel(label) {
-        const raw = String(label || "");
-        const match = raw.match(/^([A-Z]\d+)-/i);
-        return match ? match[1].toUpperCase() : "";
-      }
-
-      function buildVehicleMapByTripId(vehiclePositionsJson) {
-        const map = new Map();
-        const entities = Array.isArray(vehiclePositionsJson?.entity) ? vehiclePositionsJson.entity : [];
-
-        for (const ent of entities) {
-          const v = ent?.vehicle;
-          const tripId = v?.trip?.trip_id;
-          if (!tripId) {
-            continue;
-          }
-
-          const label = v?.vehicle?.label || "";
-          map.set(tripId, {
-            label,
-            platform: extractPlatformFromLabel(label),
-            line: extractLineFromLabel(label),
-          });
-        }
-
-        return map;
       }
 
       function pickStopTimesFromTripUpdate(tripUpdate, originStopId, destStopId) {
@@ -392,11 +233,47 @@
         return t > now;
       }
 
+      function extractPlatformFromLabel(label) {
+        const raw = String(label || "");
+        const match = raw.match(/PLATF\.\((\d+)\)/i);
+        return match ? match[1] : "";
+      }
+
+      function extractLineFromLabel(label) {
+        const raw = String(label || "");
+        const match = raw.match(/^([A-Z]\d+)-/i);
+        return match ? match[1].toUpperCase() : "";
+      }
+
+      function buildVehicleMapByTripId(vehiclePositionsJson) {
+        const map = new Map();
+        const entities = Array.isArray(vehiclePositionsJson?.entity) ? vehiclePositionsJson.entity : [];
+
+        for (const ent of entities) {
+          const v = ent?.vehicle;
+          const tripId = v?.trip?.trip_id;
+          if (!tripId) {
+            continue;
+          }
+
+          const label = v?.vehicle?.label || "";
+          map.set(tripId, {
+            platform: extractPlatformFromLabel(label),
+            line: extractLineFromLabel(label),
+          });
+        }
+
+        return map;
+      }
+
+      // =========================
+      // Render
+      // =========================
       function renderTrains(trains) {
         if (!trains.length) {
           trainListEl.innerHTML = `
             <div class="alert alert-info mb-0" role="alert">
-              No hay trenes próximos encontrados con estos IDs de parada.
+              No hay trenes próximos (o los stop_id no coinciden con los de GTFS-RT).
             </div>
           `;
           return;
@@ -404,10 +281,6 @@
 
         trainListEl.innerHTML = trains
           .map((t, idx) => {
-            const arrivalOrigin = t.originArrival || "—";
-            const departureOrigin = t.originDeparture || "—";
-            const etaDest = t.destArrival || "—";
-
             const platform = t.platform ? escapeHtml(t.platform) : "—";
             const line = t.line ? escapeHtml(t.line) : "—";
 
@@ -418,9 +291,9 @@
                     <div class="small text-secondary mb-1">
                       Tren ${idx + 1} <span class="mono text-secondary">${escapeHtml(t.tripId || "")}</span>
                     </div>
-                    <div class="time-big">${escapeHtml(arrivalOrigin)}</div>
-                    <div class="time-small text-secondary">Salida prevista: <strong>${escapeHtml(departureOrigin)}</strong></div>
-                    <div class="mt-2 text-secondary small">Estimación llegada destino: <strong>${escapeHtml(etaDest)}</strong></div>
+                    <div class="time-big">${escapeHtml(t.originArrival || "—")}</div>
+                    <div class="time-small text-secondary">Salida prevista: <strong>${escapeHtml(t.originDeparture || "—")}</strong></div>
+                    <div class="mt-2 text-secondary small">Estimación llegada destino: <strong>${escapeHtml(t.destArrival || "—")}</strong></div>
                   </div>
                   <div class="text-end">
                     <div class="badge text-bg-dark platform-badge mb-2">Andén/Vía: ${platform}</div>
@@ -433,64 +306,17 @@
           .join("");
       }
 
-      async function getNextTrains(originStopId, destStopId) {
-        const tripUpdatesFetch = await withTimeout(fetchJsonWithFallback(TRIP_UPDATES_URL), 12000, "trip_updates");
-        const vehiclesFetch = await withTimeout(fetchJsonWithFallback(VEHICLE_POSITIONS_URL), 12000, "vehicle_positions");
-
-        const vehicleMap = buildVehicleMapByTripId(vehiclesFetch.data);
-
-        const entities = Array.isArray(tripUpdatesFetch.data?.entity) ? tripUpdatesFetch.data.entity : [];
-        const candidates = [];
-
-        for (const ent of entities) {
-          const tu = ent?.trip_update;
-          const tripId = tu?.trip?.trip_id || "";
-          if (!tripId) {
-            continue;
-          }
-
-          const times = pickStopTimesFromTripUpdate(tu, originStopId, destStopId);
-          if (!times) {
-            continue;
-          }
-
-          if (!isFutureTrain(times.origin)) {
-            continue;
-          }
-
-          const originArrival = toLocalTimeStrFromEpoch(times.origin.arrTime || times.origin.depTime);
-          const originDeparture = toLocalTimeStrFromEpoch(times.origin.depTime || times.origin.arrTime);
-          const destArrival = toLocalTimeStrFromEpoch(times.dest.arrTime || times.dest.depTime);
-
-          const v = vehicleMap.get(tripId);
-
-          candidates.push({
-            tripId,
-            sortEpoch: times.origin.depTime || times.origin.arrTime || 0,
-            originArrival,
-            originDeparture,
-            destArrival,
-            platform: v?.platform || "",
-            line: v?.line || "",
-          });
-        }
-
-        candidates.sort((a, b) => a.sortEpoch - b.sortEpoch);
-
-        return {
-          trains: candidates.slice(0, 2),
-          via: { tripUpdates: tripUpdatesFetch.via, vehicles: vehiclesFetch.via },
-        };
-      }
-
+      // =========================
+      // Lógica principal
+      // =========================
       async function update() {
         if (isUpdating) {
           return;
         }
 
         isUpdating = true;
-        statusEl.textContent = "Actualizando…";
         setAlert("");
+        statusEl.textContent = "Actualizando…";
 
         try {
           const now = new Date();
@@ -499,41 +325,71 @@
           stationTitleEl.textContent = `Estación: ${mode.stationTitle}`;
           subtitleEl.textContent = "Estos son los próximos trenes.";
 
-          const originStopIdFast = mode.originKey === "ATOCHA" ? DEFAULT_STOP_ID_ATOCHA : DEFAULT_STOP_ID_CHAMARTIN;
-          const destStopIdFast = mode.destKey === "ATOCHA" ? DEFAULT_STOP_ID_ATOCHA : DEFAULT_STOP_ID_CHAMARTIN;
+          statusEl.textContent = "Descargando trip_updates…";
+          const tripUpdatesFetch = await fetchJsonWithFallback(TRIP_UPDATES_URL, TIMEOUT_TRIP_UPDATES_MS);
 
-          statusEl.textContent = "Buscando trenes (rápido)…";
+          const entities = Array.isArray(tripUpdatesFetch.data?.entity) ? tripUpdatesFetch.data.entity : [];
+          const candidates = [];
 
-          const fastStart = await withTimeout(getNextTrains(originStopIdFast, destStopIdFast), MAX_FAST_START_MS, "fast-start");
-          renderTrains(fastStart.trains);
-
-          if (fastStart.trains.length > 0) {
-            statusEl.textContent = "Actualizado.";
-            return;
-          }
-
-          statusEl.textContent = "Sin trenes (rápido). Probando GTFS ZIP…";
-
-          try {
-            await loadStopsFromZipIfPossible();
-
-            const originStopId = mode.originKey === "ATOCHA" ? cachedStopIdAtocha : cachedStopIdChamartin;
-            const destStopId = mode.destKey === "ATOCHA" ? cachedStopIdAtocha : cachedStopIdChamartin;
-
-            const fromZip = await getNextTrains(originStopId, destStopId);
-            renderTrains(fromZip.trains);
-
-            if (!fromZip.trains.length) {
-              setAlert(
-                `No hay trenes con stop_id rápido (${originStopIdFast}→${destStopIdFast}) ni con stop_id GTFS (${originStopId}→${destStopId}).`
-              );
+          for (const ent of entities) {
+            const tu = ent?.trip_update;
+            const tripId = tu?.trip?.trip_id || "";
+            if (!tripId) {
+              continue;
             }
 
-            statusEl.textContent = "Actualizado.";
-          } catch (zipErr) {
-            setAlert(`El editor online puede bloquear el ZIP. Detalle ZIP: ${String(zipErr?.message || zipErr)}`);
-            statusEl.textContent = "Actualizado (sin ZIP).";
+            const times = pickStopTimesFromTripUpdate(tu, mode.originId, mode.destId);
+            if (!times) {
+              continue;
+            }
+
+            if (!isFutureTrain(times.origin)) {
+              continue;
+            }
+
+            candidates.push({
+              tripId,
+              sortEpoch: times.origin.depTime || times.origin.arrTime || 0,
+              originArrival: toLocalTimeStrFromEpoch(times.origin.arrTime || times.origin.depTime),
+              originDeparture: toLocalTimeStrFromEpoch(times.origin.depTime || times.origin.arrTime),
+              destArrival: toLocalTimeStrFromEpoch(times.dest.arrTime || times.dest.depTime),
+              platform: "",
+              line: "",
+            });
           }
+
+          candidates.sort((a, b) => a.sortEpoch - b.sortEpoch);
+
+          const top2 = candidates.slice(0, 2);
+
+          // Solo si ya tenemos trenes candidatos, pedimos vehicles para sacar andén/línea (ahorra tiempo).
+          if (top2.length) {
+            statusEl.textContent = "Descargando vehicle_positions…";
+            const vehiclesFetch = await fetchJsonWithFallback(VEHICLE_POSITIONS_URL, TIMEOUT_VEHICLES_MS);
+
+            const vehicleMap = buildVehicleMapByTripId(vehiclesFetch.data);
+
+            for (const t of top2) {
+              const v = vehicleMap.get(t.tripId);
+              if (v) {
+                t.platform = v.platform || "";
+                t.line = v.line || "";
+              }
+            }
+
+            const usedProxy = tripUpdatesFetch.via !== "direct" || vehiclesFetch.via !== "direct";
+            if (usedProxy) {
+              setAlert("Nota: el navegador ha bloqueado CORS y se ha usado un proxy público para leer los datos.");
+            }
+          } else {
+            setAlert(
+              `No se han encontrado viajes con stop_id origen/destino = ${mode.originId} → ${mode.destId}. ` +
+              `Esto puede significar que esos stop_id no son los reales del feed GTFS-RT.`
+            );
+          }
+
+          renderTrains(top2);
+          statusEl.textContent = "Actualizado.";
         } catch (err) {
           statusEl.textContent = "Error al actualizar.";
           setAlert(`Fallo: ${String(err?.message || err)}`);
