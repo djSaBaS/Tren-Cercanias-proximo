@@ -23,6 +23,10 @@
       .mono {
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       }
+      .debug {
+        white-space: pre-wrap;
+        font-size: .9rem;
+      }
     </style>
   </head>
 
@@ -50,6 +54,13 @@
 
           <div id="trainList" class="gap-y"></div>
 
+          <div class="mt-4 d-none" id="debugBox">
+            <div class="alert alert-secondary mb-0" role="alert">
+              <div class="fw-bold mb-2">Ayuda / debug (para ajustar stopId)</div>
+              <div class="debug" id="debugText">—</div>
+            </div>
+          </div>
+
           <div class="mt-3 text-secondary small">
             <span>Se actualiza automáticamente (sin botones).</span>
             <span class="mx-2">·</span>
@@ -60,55 +71,58 @@
     </main>
 
     <script>
-      /* Definimos endpoints GTFS-RT de Renfe. */
+      /* URL base de TU Cloudflare Worker (proxy CORS). */
+      const PROXY_BASE_URL = "https://bitter-meadow-5628.juanantoniosanchezplaza.workers.dev";
+
+      /* Endpoints GTFS-RT de Renfe. */
       const TRIP_UPDATES_URL = "https://gtfsrt.renfe.com/trip_updates.json";
-      /* Definimos endpoint para intentar obtener andén y línea. */
       const VEHICLE_POSITIONS_URL = "https://gtfsrt.renfe.com/vehicle_positions.json";
 
-      /* Definimos IDs reales de paradas (según lo que has confirmado). */
-      const STOP_ID_CHAMARTIN = "25";
-      /* Definimos IDs reales de paradas (según lo que has confirmado). */
-      const STOP_ID_ATOCHA = "30";
-
-      /* Definimos nombres visibles. */
-      const STATION_NAME_ATOCHA = "Madrid-Puerta de Atocha";
-      /* Definimos nombres visibles. */
-      const STATION_NAME_CHAMARTIN = "Madrid-Chamartín";
-
-      /* Definimos intervalos de refresco. */
+      /* Intervalo de refresco de la app. */
       const REFRESH_MS = 60_000;
-      /* Definimos intervalo del reloj. */
+      /* Intervalo del reloj. */
       const CLOCK_MS = 500;
 
-      /* Definimos timeouts realistas. */
+      /* Timeouts de red. */
       const TIMEOUT_TRIP_UPDATES_MS = 25_000;
-      /* Definimos timeouts realistas. */
       const TIMEOUT_VEHICLES_MS = 25_000;
 
-      /* Capturamos elementos DOM. */
-      const clockEl = document.getElementById("clock");
-      /* Capturamos elementos DOM. */
-      const statusEl = document.getElementById("status");
-      /* Capturamos elementos DOM. */
-      const stationTitleEl = document.getElementById("stationTitle");
-      /* Capturamos elementos DOM. */
-      const subtitleEl = document.getElementById("subtitle");
-      /* Capturamos elementos DOM. */
-      const trainListEl = document.getElementById("trainList");
-      /* Capturamos elementos DOM. */
-      const alertBoxEl = document.getElementById("alertBox");
-      /* Capturamos elementos DOM. */
-      const alertTextEl = document.getElementById("alertText");
-      /* Capturamos elementos DOM. */
-      const refreshInfoEl = document.getElementById("refreshInfo");
+      /* Nombre visible de estaciones. */
+      const STATION_NAME_ATOCHA = "Madrid-Puerta de Atocha";
+      const STATION_NAME_CHAMARTIN = "Madrid-Chamartín";
 
-      /* Pintamos el intervalo de refresco. */
+      /* CONFIG: stopId candidatos. Añade aquí los correctos cuando los confirmes. */
+      /* En tu JSON has visto stopId tipo 50701/50702, así que probablemente aquí hay que meter esos. */
+      const STOP_IDS_ATOCHA = [
+        "30",
+        // "50701",
+        // "50702",
+      ];
+
+      /* CONFIG: stopId candidatos. */
+      const STOP_IDS_CHAMARTIN = [
+        "25",
+        // "XXXXX",
+      ];
+
+      /* Elementos DOM. */
+      const clockEl = document.getElementById("clock");
+      const statusEl = document.getElementById("status");
+      const stationTitleEl = document.getElementById("stationTitle");
+      const subtitleEl = document.getElementById("subtitle");
+      const trainListEl = document.getElementById("trainList");
+      const alertBoxEl = document.getElementById("alertBox");
+      const alertTextEl = document.getElementById("alertText");
+      const refreshInfoEl = document.getElementById("refreshInfo");
+      const debugBoxEl = document.getElementById("debugBox");
+      const debugTextEl = document.getElementById("debugText");
+
+      /* Pintamos el intervalo. */
       refreshInfoEl.textContent = `Refresco: ${Math.round(REFRESH_MS / 1000)}s`;
 
-      /* Evitamos solapar updates. */
+      /* Evitamos solapar actualizaciones. */
       let isUpdating = false;
 
-      /* Mostramos u ocultamos alertas. */
       function setAlert(message) {
         if (!message) {
           alertBoxEl.classList.add("d-none");
@@ -119,7 +133,16 @@
         alertBoxEl.classList.remove("d-none");
       }
 
-      /* Escapamos HTML para seguridad. */
+      function setDebug(message) {
+        if (!message) {
+          debugBoxEl.classList.add("d-none");
+          debugTextEl.textContent = "";
+          return;
+        }
+        debugTextEl.textContent = message;
+        debugBoxEl.classList.remove("d-none");
+      }
+
       function escapeHtml(text) {
         const raw = String(text ?? "");
         return raw
@@ -130,76 +153,19 @@
           .replaceAll("'", "&#039;");
       }
 
-      /* Formateamos 2 dígitos. */
       function pad2(value) {
         return String(value).padStart(2, "0");
       }
 
-      /* Actualizamos el reloj. */
       function tickClock() {
         const now = new Date();
         clockEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
       }
 
-      /* Decidimos estación según hora. */
-      function getModeByTime(now) {
-        const h = now.getHours();
-        const m = now.getMinutes();
-
-        /* De 00:00 a 12:00 (incluido 12:00) => Atocha hacia Chamartín. */
-        if (h < 12 || (h === 12 && m === 0)) {
-          return {
-            stationTitle: STATION_NAME_ATOCHA,
-            originStopId: STOP_ID_ATOCHA,
-            destStopId: STOP_ID_CHAMARTIN,
-          };
-        }
-
-        /* De 12:01 a 23:59 => Chamartín hacia Atocha. */
-        return {
-          stationTitle: STATION_NAME_CHAMARTIN,
-          originStopId: STOP_ID_CHAMARTIN,
-          destStopId: STOP_ID_ATOCHA,
-        };
-      }
-
-      /* Hacemos fetch con timeout usando AbortController. */
-      async function fetchWithTimeout(url, timeoutMs) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-        try {
-          const res = await fetch(url, { cache: "no-store", signal: controller.signal });
-          return res;
-        } finally {
-          clearTimeout(timeoutId);
-        }
-      }
-
-      /* Descargamos JSON con fallback a proxy (por CORS). */
-      async function fetchJsonWithFallback(url, timeoutMs) {
-        try {
-          const res = await fetchWithTimeout(url, timeoutMs);
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-          }
-          return { data: await res.json(), via: "direct" };
-        } catch (e1) {
-          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-          const res2 = await fetchWithTimeout(proxyUrl, timeoutMs);
-          if (!res2.ok) {
-            throw new Error(`Proxy HTTP ${res2.status}`);
-          }
-          return { data: await res2.json(), via: "allorigins" };
-        }
-      }
-
-      /* Obtenemos epoch actual en segundos. */
       function epochNowSeconds() {
         return Math.floor(Date.now() / 1000);
       }
 
-      /* Convertimos epoch a HH:MM local. */
       function toLocalTimeStrFromEpoch(epochSeconds) {
         if (!epochSeconds || Number.isNaN(Number(epochSeconds))) {
           return "";
@@ -208,70 +174,64 @@
         return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
       }
 
-      /* Extraemos origin/dest de stop_time_update para un viaje. */
-      function pickStopTimesFromTripUpdate(tripUpdate, originStopId, destStopId) {
-        const updates = Array.isArray(tripUpdate?.stop_time_update) ? tripUpdate.stop_time_update : [];
-        if (!updates.length) {
-          return null;
+      function getModeByTime(now) {
+        const h = now.getHours();
+        const m = now.getMinutes();
+
+        if (h < 12 || (h === 12 && m === 0)) {
+          return {
+            stationTitle: STATION_NAME_ATOCHA,
+            originName: "Atocha",
+            destName: "Chamartín",
+            originStopIds: STOP_IDS_ATOCHA,
+            destStopIds: STOP_IDS_CHAMARTIN,
+          };
         }
 
-        let origin = null;
-        let dest = null;
-
-        for (const u of updates) {
-          const stopId = String(u?.stop_id || "");
-          if (!stopId) {
-            continue;
-          }
-
-          const arrTime = u?.arrival?.time ? Number(u.arrival.time) : null;
-          const depTime = u?.departure?.time ? Number(u.departure.time) : null;
-
-          if (stopId === originStopId) {
-            origin = { stopId, arrTime, depTime };
-          }
-
-          if (stopId === destStopId) {
-            dest = { stopId, arrTime, depTime };
-          }
-        }
-
-        if (!origin || !dest) {
-          return null;
-        }
-
-        return { origin, dest };
+        return {
+          stationTitle: STATION_NAME_CHAMARTIN,
+          originName: "Chamartín",
+          destName: "Atocha",
+          originStopIds: STOP_IDS_CHAMARTIN,
+          destStopIds: STOP_IDS_ATOCHA,
+        };
       }
 
-      /* Filtramos trenes futuros por la hora de salida/llegada en origen. */
-      function isFutureTrain(originTimes) {
-        const now = epochNowSeconds();
-        const t = originTimes?.depTime || originTimes?.arrTime || 0;
-        return t > now;
+      async function fetchJsonViaWorker(targetUrl, timeoutMs) {
+        const proxyUrl = `${PROXY_BASE_URL}/?target=${encodeURIComponent(targetUrl)}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+          const res = await fetch(proxyUrl, { cache: "no-store", signal: controller.signal });
+          if (!res.ok) {
+            throw new Error(`Proxy HTTP ${res.status}`);
+          }
+          return await res.json();
+        } finally {
+          clearTimeout(timeoutId);
+        }
       }
 
-      /* Extraemos el andén desde label (si Renfe lo incluye). */
       function extractPlatformFromLabel(label) {
         const raw = String(label || "");
         const match = raw.match(/PLATF\.\((\d+)\)/i);
         return match ? match[1] : "";
       }
 
-      /* Extraemos línea desde label (si Renfe lo incluye). */
       function extractLineFromLabel(label) {
         const raw = String(label || "");
         const match = raw.match(/^([A-Z]\d+)-/i);
         return match ? match[1].toUpperCase() : "";
       }
 
-      /* Construimos mapa trip_id => {platform,line}. */
       function buildVehicleMapByTripId(vehiclePositionsJson) {
         const map = new Map();
         const entities = Array.isArray(vehiclePositionsJson?.entity) ? vehiclePositionsJson.entity : [];
 
         for (const ent of entities) {
           const v = ent?.vehicle;
-          const tripId = v?.trip?.trip_id;
+          const tripId = v?.trip?.trip_id || v?.trip?.tripId || "";
           if (!tripId) {
             continue;
           }
@@ -286,7 +246,64 @@
         return map;
       }
 
-      /* Pintamos trenes en pantalla. */
+      function normalizeTripUpdateEntity(ent) {
+        const tu = ent?.tripUpdate || ent?.trip_update || null;
+        if (!tu) {
+          return null;
+        }
+
+        const tripId = tu?.trip?.tripId || tu?.trip?.trip_id || "";
+        const stopTimeUpdates = tu?.stopTimeUpdate || tu?.stop_time_update || [];
+
+        return {
+          tripId,
+          stopTimeUpdates: Array.isArray(stopTimeUpdates) ? stopTimeUpdates : [],
+        };
+      }
+
+      function normalizeStopTimeUpdate(stu) {
+        const stopId = String(stu?.stopId || stu?.stop_id || "");
+        const arrivalTime = stu?.arrival?.time ? Number(stu.arrival.time) : null;
+        const departureTime = stu?.departure?.time ? Number(stu.departure.time) : null;
+        return { stopId, arrivalTime, departureTime };
+      }
+
+      function pickTimesForOriginDest(stopTimeUpdates, originStopIdsSet, destStopIdsSet) {
+        let origin = null;
+        let dest = null;
+
+        for (const raw of stopTimeUpdates) {
+          const u = normalizeStopTimeUpdate(raw);
+          if (!u.stopId) {
+            continue;
+          }
+
+          if (!origin && originStopIdsSet.has(u.stopId)) {
+            origin = u;
+          }
+
+          if (!dest && destStopIdsSet.has(u.stopId)) {
+            dest = u;
+          }
+
+          if (origin && dest) {
+            break;
+          }
+        }
+
+        if (!origin || !dest) {
+          return null;
+        }
+
+        return { origin, dest };
+      }
+
+      function isFutureAtOrigin(originUpdate) {
+        const now = epochNowSeconds();
+        const t = originUpdate.departureTime || originUpdate.arrivalTime || 0;
+        return t > now;
+      }
+
       function renderTrains(trains) {
         if (!trains.length) {
           trainListEl.innerHTML = `
@@ -310,8 +327,12 @@
                       Tren ${idx + 1} <span class="mono text-secondary">${escapeHtml(t.tripId || "")}</span>
                     </div>
                     <div class="time-big">${escapeHtml(t.originArrival || "—")}</div>
-                    <div class="time-small text-secondary">Salida prevista: <strong>${escapeHtml(t.originDeparture || "—")}</strong></div>
-                    <div class="mt-2 text-secondary small">Estimación llegada destino: <strong>${escapeHtml(t.destArrival || "—")}</strong></div>
+                    <div class="time-small text-secondary">
+                      Salida prevista: <strong>${escapeHtml(t.originDeparture || "—")}</strong>
+                    </div>
+                    <div class="mt-2 text-secondary small">
+                      Estimación llegada destino: <strong>${escapeHtml(t.destArrival || "—")}</strong>
+                    </div>
                   </div>
                   <div class="text-end">
                     <div class="badge text-bg-dark platform-badge mb-2">Andén/Vía: ${platform}</div>
@@ -324,7 +345,58 @@
           .join("");
       }
 
-      /* Actualizamos datos. */
+      function buildDebugStopIdHints(tripUpdatesJson) {
+        const now = epochNowSeconds();
+        const entities = Array.isArray(tripUpdatesJson?.entity) ? tripUpdatesJson.entity : [];
+
+        const soon = [];
+
+        for (const ent of entities) {
+          const tu = normalizeTripUpdateEntity(ent);
+          if (!tu || !tu.stopTimeUpdates.length) {
+            continue;
+          }
+
+          for (const raw of tu.stopTimeUpdates) {
+            const u = normalizeStopTimeUpdate(raw);
+            const t = u.departureTime || u.arrivalTime || 0;
+
+            if (!u.stopId || !t) {
+              continue;
+            }
+
+            if (t > now && t < now + 3600) {
+              soon.push({ stopId: u.stopId, time: t });
+            }
+          }
+        }
+
+        soon.sort((a, b) => a.time - b.time);
+
+        const firstByStop = new Map();
+        for (const item of soon) {
+          if (!firstByStop.has(item.stopId)) {
+            firstByStop.set(item.stopId, item.time);
+          }
+          if (firstByStop.size >= 20) {
+            break;
+          }
+        }
+
+        const lines = [];
+        lines.push("No se han encontrado trenes con los stopId configurados.");
+        lines.push("Estos son stopId que aparecen con llegadas/salidas en la próxima hora (top 20):");
+        lines.push("");
+
+        for (const [stopId, t] of firstByStop.entries()) {
+          lines.push(`- stopId ${stopId}  ->  ${toLocalTimeStrFromEpoch(t)}`);
+        }
+
+        lines.push("");
+        lines.push("Añade los stopId correctos arriba en STOP_IDS_ATOCHA y STOP_IDS_CHAMARTIN.");
+        return lines.join("\n");
+      }
+
       async function update() {
         if (isUpdating) {
           return;
@@ -332,6 +404,7 @@
 
         isUpdating = true;
         setAlert("");
+        setDebug("");
         statusEl.textContent = "Actualizando…";
 
         try {
@@ -339,36 +412,44 @@
           const mode = getModeByTime(now);
 
           stationTitleEl.textContent = `Estación: ${mode.stationTitle}`;
-          subtitleEl.textContent = "Estos son los próximos trenes.";
+          subtitleEl.textContent = `Estos son los próximos trenes (${mode.originName} → ${mode.destName}).`;
 
           statusEl.textContent = "Descargando trip_updates…";
-          const tripUpdatesFetch = await fetchJsonWithFallback(TRIP_UPDATES_URL, TIMEOUT_TRIP_UPDATES_MS);
+          const tripUpdatesJson = await fetchJsonViaWorker(TRIP_UPDATES_URL, TIMEOUT_TRIP_UPDATES_MS);
 
-          const entities = Array.isArray(tripUpdatesFetch.data?.entity) ? tripUpdatesFetch.data.entity : [];
+          const originSet = new Set((mode.originStopIds || []).map((x) => String(x)));
+          const destSet = new Set((mode.destStopIds || []).map((x) => String(x)));
+
+          const entities = Array.isArray(tripUpdatesJson?.entity) ? tripUpdatesJson.entity : [];
           const candidates = [];
 
           for (const ent of entities) {
-            const tu = ent?.trip_update;
-            const tripId = tu?.trip?.trip_id || "";
-            if (!tripId) {
+            const tu = normalizeTripUpdateEntity(ent);
+            if (!tu || !tu.tripId || !tu.stopTimeUpdates.length) {
               continue;
             }
 
-            const times = pickStopTimesFromTripUpdate(tu, mode.originStopId, mode.destStopId);
+            const times = pickTimesForOriginDest(tu.stopTimeUpdates, originSet, destSet);
             if (!times) {
               continue;
             }
 
-            if (!isFutureTrain(times.origin)) {
+            if (!isFutureAtOrigin(times.origin)) {
               continue;
             }
 
+            const originArrival = toLocalTimeStrFromEpoch(times.origin.arrivalTime || times.origin.departureTime);
+            const originDeparture = toLocalTimeStrFromEpoch(times.origin.departureTime || times.origin.arrivalTime);
+            const destArrival = toLocalTimeStrFromEpoch(times.dest.arrivalTime || times.dest.departureTime);
+
+            const sortEpoch = times.origin.departureTime || times.origin.arrivalTime || 0;
+
             candidates.push({
-              tripId,
-              sortEpoch: times.origin.depTime || times.origin.arrTime || 0,
-              originArrival: toLocalTimeStrFromEpoch(times.origin.arrTime || times.origin.depTime),
-              originDeparture: toLocalTimeStrFromEpoch(times.origin.depTime || times.origin.arrTime),
-              destArrival: toLocalTimeStrFromEpoch(times.dest.arrTime || times.dest.depTime),
+              tripId: tu.tripId,
+              sortEpoch,
+              originArrival,
+              originDeparture,
+              destArrival,
               platform: "",
               line: "",
             });
@@ -378,26 +459,29 @@
 
           const top2 = candidates.slice(0, 2);
 
-          if (top2.length) {
-            statusEl.textContent = "Descargando vehicle_positions…";
-            const vehiclesFetch = await fetchJsonWithFallback(VEHICLE_POSITIONS_URL, TIMEOUT_VEHICLES_MS);
+          if (!top2.length) {
+            setAlert(
+              `No se han encontrado trenes con stopId configurados. ` +
+              `Origen=[${mode.originStopIds.join(", ")}], Destino=[${mode.destStopIds.join(", ")}].`
+            );
 
-            const vehicleMap = buildVehicleMapByTripId(vehiclesFetch.data);
+            setDebug(buildDebugStopIdHints(tripUpdatesJson));
+            renderTrains([]);
+            statusEl.textContent = "Actualizado.";
+            return;
+          }
 
-            for (const t of top2) {
-              const v = vehicleMap.get(t.tripId);
-              if (v) {
-                t.platform = v.platform || "";
-                t.line = v.line || "";
-              }
+          statusEl.textContent = "Descargando vehicle_positions…";
+          const vehiclesJson = await fetchJsonViaWorker(VEHICLE_POSITIONS_URL, TIMEOUT_VEHICLES_MS);
+
+          const vehicleMap = buildVehicleMapByTripId(vehiclesJson);
+
+          for (const t of top2) {
+            const v = vehicleMap.get(t.tripId);
+            if (v) {
+              t.platform = v.platform || "";
+              t.line = v.line || "";
             }
-
-            const usedProxy = tripUpdatesFetch.via === "allorigins";
-            if (usedProxy) {
-              setAlert("Nota: el navegador ha bloqueado CORS y se ha usado un proxy público para leer datos.");
-            }
-          } else {
-            setAlert(`No hay viajes futuros para el par ${mode.originStopId} → ${mode.destStopId} en este momento.`);
           }
 
           renderTrains(top2);
