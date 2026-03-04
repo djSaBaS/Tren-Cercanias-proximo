@@ -62,16 +62,10 @@
     </main>
 
     <script>
-      // =========================
-      // CONFIGURACIÓN DE FUENTES
-      // =========================
       const GTFS_ZIP_URL = "https://ssl.renfe.com/ftransit/Fichero_CER_FOMENTO/fomento_transit.zip";
       const TRIP_UPDATES_URL = "https://gtfsrt.renfe.com/trip_updates.json";
       const VEHICLE_POSITIONS_URL = "https://gtfsrt.renfe.com/vehicle_positions.json";
 
-      // =========================
-      // CONFIGURACIÓN FUNCIONAL
-      // =========================
       const REFRESH_MS = 60_000;
       const CLOCK_MS = 500;
 
@@ -81,9 +75,11 @@
       const STOP_NAME_HINTS_ATOCHA = ["ATOCHA", "MADRID-ATOCHA", "PUERTA DE ATOCHA"];
       const STOP_NAME_HINTS_CHAMARTIN = ["CHAMARTIN", "MADRID-CHAMARTIN", "CLARA CAMPOAMOR"];
 
-      // =========================
-      // ELEMENTOS DOM
-      // =========================
+      const DEFAULT_STOP_ID_ATOCHA = "18000";
+      const DEFAULT_STOP_ID_CHAMARTIN = "17000";
+
+      const MAX_FAST_START_MS = 8000;
+
       const clockEl = document.getElementById("clock");
       const statusEl = document.getElementById("status");
       const stationTitleEl = document.getElementById("stationTitle");
@@ -95,18 +91,12 @@
 
       refreshInfoEl.textContent = `Refresco: ${Math.round(REFRESH_MS / 1000)}s`;
 
-      // =========================
-      // ESTADO EN MEMORIA
-      // =========================
       let isUpdating = false;
 
       let cachedStops = null;
-      let cachedStopIdAtocha = null;
-      let cachedStopIdChamartin = null;
+      let cachedStopIdAtocha = DEFAULT_STOP_ID_ATOCHA;
+      let cachedStopIdChamartin = DEFAULT_STOP_ID_CHAMARTIN;
 
-      // =========================
-      // UTILIDADES UI
-      // =========================
       function setAlert(message) {
         if (!message) {
           alertBoxEl.classList.add("d-none");
@@ -136,40 +126,30 @@
         clockEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
       }
 
-      // =========================
-      // LÓGICA DE HORARIO
-      // =========================
       function getModeByTime(now) {
         const h = now.getHours();
         const m = now.getMinutes();
 
         if (h < 12 || (h === 12 && m === 0)) {
-          return {
-            stationTitle: STATION_NAME_ATOCHA,
-            originKey: "ATOCHA",
-            destKey: "CHAMARTIN",
-          };
+          return { stationTitle: STATION_NAME_ATOCHA, originKey: "ATOCHA", destKey: "CHAMARTIN" };
         }
-
-        return {
-          stationTitle: STATION_NAME_CHAMARTIN,
-          originKey: "CHAMARTIN",
-          destKey: "ATOCHA",
-        };
+        return { stationTitle: STATION_NAME_CHAMARTIN, originKey: "CHAMARTIN", destKey: "ATOCHA" };
       }
 
-      // =========================
-      // FETCH CON FALLBACK CORS
-      // =========================
+      function withTimeout(promise, ms, label) {
+        return Promise.race([
+          promise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout (${label}) tras ${ms}ms`)), ms)),
+        ]);
+      }
+
       async function fetchJsonWithFallback(url) {
         const attempts = [
-          { type: "direct", buildUrl: (u) => u, parser: (r) => r.json() },
-          {
-            type: "allorigins",
-            buildUrl: (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-            parser: (r) => r.json(),
-          },
+          { type: "direct", buildUrl: (u) => u },
+          { type: "allorigins", buildUrl: (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
         ];
+
+        let lastErr = null;
 
         for (const attempt of attempts) {
           try {
@@ -177,13 +157,15 @@
             if (!res.ok) {
               throw new Error(`HTTP ${res.status}`);
             }
-            return { data: await attempt.parser(res), via: attempt.type };
+            const data = await res.json();
+            return { data, via: attempt.type };
           } catch (e) {
+            lastErr = e;
             continue;
           }
         }
 
-        throw new Error("No se pudo obtener JSON (CORS o red).");
+        throw new Error(`No se pudo obtener JSON (CORS/red). Detalle: ${String(lastErr?.message || lastErr)}`);
       }
 
       async function fetchArrayBufferWithFallback(url) {
@@ -192,24 +174,25 @@
           { type: "allorigins", buildUrl: (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
         ];
 
+        let lastErr = null;
+
         for (const attempt of attempts) {
           try {
             const res = await fetch(attempt.buildUrl(url), { cache: "no-store" });
             if (!res.ok) {
               throw new Error(`HTTP ${res.status}`);
             }
-            return { buffer: await res.arrayBuffer(), via: attempt.type };
+            const buffer = await res.arrayBuffer();
+            return { buffer, via: attempt.type };
           } catch (e) {
+            lastErr = e;
             continue;
           }
         }
 
-        throw new Error("No se pudo obtener el ZIP (CORS o red).");
+        throw new Error(`No se pudo obtener ZIP (CORS/red). Detalle: ${String(lastErr?.message || lastErr)}`);
       }
 
-      // =========================
-      // GTFS: STOPS.TXT
-      // =========================
       function parseCsvLine(line) {
         const result = [];
         let current = "";
@@ -283,14 +266,18 @@
         return scored.length ? scored[0].stopId : null;
       }
 
-      async function ensureStopsLoaded() {
+      async function loadStopsFromZipIfPossible() {
         if (cachedStops && cachedStopIdAtocha && cachedStopIdChamartin) {
           return { via: "cache" };
         }
 
-        statusEl.textContent = "Cargando paradas (GTFS)…";
+        if (typeof window.JSZip === "undefined") {
+          throw new Error("JSZip no está disponible (bloqueado por el editor online o CDN).");
+        }
 
-        const zipFetch = await fetchArrayBufferWithFallback(GTFS_ZIP_URL);
+        statusEl.textContent = "Cargando paradas (GTFS ZIP)…";
+
+        const zipFetch = await withTimeout(fetchArrayBufferWithFallback(GTFS_ZIP_URL), 15000, "GTFS ZIP");
         const zip = await JSZip.loadAsync(zipFetch.buffer);
 
         const stopsFile = zip.file("stops.txt");
@@ -319,19 +306,16 @@
         return { via: zipFetch.via };
       }
 
-      // =========================
-      // GTFS-RT: TRIP UPDATES + VEHICLES
-      // =========================
+      function epochNowSeconds() {
+        return Math.floor(Date.now() / 1000);
+      }
+
       function toLocalTimeStrFromEpoch(epochSeconds) {
         if (!epochSeconds || Number.isNaN(Number(epochSeconds))) {
           return "";
         }
         const d = new Date(Number(epochSeconds) * 1000);
         return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-      }
-
-      function epochNowSeconds() {
-        return Math.floor(Date.now() / 1000);
       }
 
       function extractPlatformFromLabel(label) {
@@ -348,8 +332,8 @@
 
       function buildVehicleMapByTripId(vehiclePositionsJson) {
         const map = new Map();
-
         const entities = Array.isArray(vehiclePositionsJson?.entity) ? vehiclePositionsJson.entity : [];
+
         for (const ent of entities) {
           const v = ent?.vehicle;
           const tripId = v?.trip?.trip_id;
@@ -412,7 +396,7 @@
         if (!trains.length) {
           trainListEl.innerHTML = `
             <div class="alert alert-info mb-0" role="alert">
-              No hay trenes próximos encontrados con datos en tiempo real.
+              No hay trenes próximos encontrados con estos IDs de parada.
             </div>
           `;
           return;
@@ -431,7 +415,9 @@
               <div class="border rounded-4 p-3 bg-white">
                 <div class="d-flex align-items-start justify-content-between gap-3">
                   <div>
-                    <div class="small text-secondary mb-1">Tren ${idx + 1} <span class="mono text-secondary">${escapeHtml(t.tripId || "")}</span></div>
+                    <div class="small text-secondary mb-1">
+                      Tren ${idx + 1} <span class="mono text-secondary">${escapeHtml(t.tripId || "")}</span>
+                    </div>
                     <div class="time-big">${escapeHtml(arrivalOrigin)}</div>
                     <div class="time-small text-secondary">Salida prevista: <strong>${escapeHtml(departureOrigin)}</strong></div>
                     <div class="mt-2 text-secondary small">Estimación llegada destino: <strong>${escapeHtml(etaDest)}</strong></div>
@@ -445,6 +431,56 @@
             `;
           })
           .join("");
+      }
+
+      async function getNextTrains(originStopId, destStopId) {
+        const tripUpdatesFetch = await withTimeout(fetchJsonWithFallback(TRIP_UPDATES_URL), 12000, "trip_updates");
+        const vehiclesFetch = await withTimeout(fetchJsonWithFallback(VEHICLE_POSITIONS_URL), 12000, "vehicle_positions");
+
+        const vehicleMap = buildVehicleMapByTripId(vehiclesFetch.data);
+
+        const entities = Array.isArray(tripUpdatesFetch.data?.entity) ? tripUpdatesFetch.data.entity : [];
+        const candidates = [];
+
+        for (const ent of entities) {
+          const tu = ent?.trip_update;
+          const tripId = tu?.trip?.trip_id || "";
+          if (!tripId) {
+            continue;
+          }
+
+          const times = pickStopTimesFromTripUpdate(tu, originStopId, destStopId);
+          if (!times) {
+            continue;
+          }
+
+          if (!isFutureTrain(times.origin)) {
+            continue;
+          }
+
+          const originArrival = toLocalTimeStrFromEpoch(times.origin.arrTime || times.origin.depTime);
+          const originDeparture = toLocalTimeStrFromEpoch(times.origin.depTime || times.origin.arrTime);
+          const destArrival = toLocalTimeStrFromEpoch(times.dest.arrTime || times.dest.depTime);
+
+          const v = vehicleMap.get(tripId);
+
+          candidates.push({
+            tripId,
+            sortEpoch: times.origin.depTime || times.origin.arrTime || 0,
+            originArrival,
+            originDeparture,
+            destArrival,
+            platform: v?.platform || "",
+            line: v?.line || "",
+          });
+        }
+
+        candidates.sort((a, b) => a.sortEpoch - b.sortEpoch);
+
+        return {
+          trains: candidates.slice(0, 2),
+          via: { tripUpdates: tripUpdatesFetch.via, vehicles: vehiclesFetch.via },
+        };
       }
 
       async function update() {
@@ -463,67 +499,44 @@
           stationTitleEl.textContent = `Estación: ${mode.stationTitle}`;
           subtitleEl.textContent = "Estos son los próximos trenes.";
 
-          const stopsLoad = await ensureStopsLoaded();
+          const originStopIdFast = mode.originKey === "ATOCHA" ? DEFAULT_STOP_ID_ATOCHA : DEFAULT_STOP_ID_CHAMARTIN;
+          const destStopIdFast = mode.destKey === "ATOCHA" ? DEFAULT_STOP_ID_ATOCHA : DEFAULT_STOP_ID_CHAMARTIN;
 
-          const originStopId = mode.originKey === "ATOCHA" ? cachedStopIdAtocha : cachedStopIdChamartin;
-          const destStopId = mode.destKey === "ATOCHA" ? cachedStopIdAtocha : cachedStopIdChamartin;
+          statusEl.textContent = "Buscando trenes (rápido)…";
 
-          const tripUpdatesFetch = await fetchJsonWithFallback(TRIP_UPDATES_URL);
-          const vehiclesFetch = await fetchJsonWithFallback(VEHICLE_POSITIONS_URL);
+          const fastStart = await withTimeout(getNextTrains(originStopIdFast, destStopIdFast), MAX_FAST_START_MS, "fast-start");
+          renderTrains(fastStart.trains);
 
-          const vehicleMap = buildVehicleMapByTripId(vehiclesFetch.data);
-
-          const entities = Array.isArray(tripUpdatesFetch.data?.entity) ? tripUpdatesFetch.data.entity : [];
-
-          const candidates = [];
-          for (const ent of entities) {
-            const tu = ent?.trip_update;
-            const tripId = tu?.trip?.trip_id || "";
-            if (!tripId) {
-              continue;
-            }
-
-            const times = pickStopTimesFromTripUpdate(tu, originStopId, destStopId);
-            if (!times) {
-              continue;
-            }
-
-            if (!isFutureTrain(times.origin)) {
-              continue;
-            }
-
-            const originArrival = toLocalTimeStrFromEpoch(times.origin.arrTime || times.origin.depTime);
-            const originDeparture = toLocalTimeStrFromEpoch(times.origin.depTime || times.origin.arrTime);
-            const destArrival = toLocalTimeStrFromEpoch(times.dest.arrTime || times.dest.depTime);
-
-            const v = vehicleMap.get(tripId);
-
-            candidates.push({
-              tripId,
-              sortEpoch: times.origin.depTime || times.origin.arrTime || 0,
-              originArrival,
-              originDeparture,
-              destArrival,
-              platform: v?.platform || "",
-              line: v?.line || "",
-            });
+          if (fastStart.trains.length > 0) {
+            statusEl.textContent = "Actualizado.";
+            return;
           }
 
-          candidates.sort((a, b) => a.sortEpoch - b.sortEpoch);
+          statusEl.textContent = "Sin trenes (rápido). Probando GTFS ZIP…";
 
-          renderTrains(candidates.slice(0, 2));
+          try {
+            await loadStopsFromZipIfPossible();
 
-          const usedProxy =
-            tripUpdatesFetch.via !== "direct" || vehiclesFetch.via !== "direct" || stopsLoad.via !== "direct";
+            const originStopId = mode.originKey === "ATOCHA" ? cachedStopIdAtocha : cachedStopIdChamartin;
+            const destStopId = mode.destKey === "ATOCHA" ? cachedStopIdAtocha : cachedStopIdChamartin;
 
-          if (usedProxy) {
-            setAlert("Nota: el navegador ha bloqueado CORS y se ha usado un proxy público para leer los datos.");
+            const fromZip = await getNextTrains(originStopId, destStopId);
+            renderTrains(fromZip.trains);
+
+            if (!fromZip.trains.length) {
+              setAlert(
+                `No hay trenes con stop_id rápido (${originStopIdFast}→${destStopIdFast}) ni con stop_id GTFS (${originStopId}→${destStopId}).`
+              );
+            }
+
+            statusEl.textContent = "Actualizado.";
+          } catch (zipErr) {
+            setAlert(`El editor online puede bloquear el ZIP. Detalle ZIP: ${String(zipErr?.message || zipErr)}`);
+            statusEl.textContent = "Actualizado (sin ZIP).";
           }
-
-          statusEl.textContent = "Actualizado.";
         } catch (err) {
           statusEl.textContent = "Error al actualizar.";
-          setAlert(`No se pudo cargar Renfe Data. Detalle: ${String(err?.message || err)}`);
+          setAlert(`Fallo: ${String(err?.message || err)}`);
           renderTrains([]);
         } finally {
           isUpdating = false;
