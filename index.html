@@ -87,9 +87,25 @@
       const TIMEOUT_TRIP_UPDATES_MS = 25_000;
       const TIMEOUT_VEHICLES_MS = 25_000;
 
-      /* Nombre visible de estaciones. */
-      const STATION_NAME_ATOCHA = "Madrid-Puerta de Atocha";
-      const STATION_NAME_CHAMARTIN = "Madrid-Chamartín";
+/* Definimos stopId candidatos para Atocha detectados por tus datos. */
+const STOP_IDS_ATOCHA = [
+/* Añadimos stopId visto repetidamente en tus feeds. */
+"50702",
+/* Añadimos stopId de la misma familia 5070x, muy probable variante de Atocha. */
+"50704",
+/* Añadimos el stopId que ya vimos antes en tu JSON inicial. */
+"50701",
+];
+
+/* Definimos stopId candidatos para Chamartín detectados por tus datos. */
+const STOP_IDS_CHAMARTIN = [
+/* Añadimos stopId de familia 430xx, probable nodo Chamartín / Madrid norte. */
+"43026",
+/* Añadimos stopId que apareció en tu lista y suele ser variante de la misma estación. */
+"43003",
+/* Añadimos el stopId que vimos antes en tu JSON inicial (si aparece en tu feed). */
+"43027",
+];
 
       /* CONFIG: stopId candidatos. Añade aquí los correctos cuando los confirmes. */
       /* En tu JSON has visto stopId tipo 50701/50702, así que probablemente aquí hay que meter esos. */
