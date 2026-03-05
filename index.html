@@ -1,238 +1,90 @@
-<!-- Declaramos el tipo de documento como HTML5. -->
+<!-- Definimos el tipo de documento como HTML5 -->
 <!doctype html>
-<!-- Abrimos el documento HTML e indicamos el idioma principal en español. -->
+<!-- Abrimos el documento HTML e indicamos el idioma -->
 <html lang="es">
+<!-- Abrimos la cabecera del documento -->
 <head>
-  <!-- Definimos la codificación UTF-8 para caracteres especiales. -->
-  <meta charset="utf-8">
-  <!-- Configuramos el viewport para una visualización responsive en móviles. -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Definimos el título de la aplicación. -->
+  <!-- Definimos la codificación para soportar caracteres especiales -->
+  <meta charset="utf-8" />
+  <!-- Configuramos el viewport para que sea responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Definimos el título de la pestaña -->
   <title>Cercanías · Próximos trenes</title>
-  <!-- Definimos una descripción corta para SEO básico. -->
-  <meta name="description" content="Panel de Cercanías configurable (estilo cartel mecánico) con datos en tiempo real y avisos/incidencias.">
-  <!-- Vinculamos el favicon en formato ICO. -->
-  <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
-  <!-- Vinculamos el favicon en formato SVG para mejor escalado. -->
-  <link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
-  <!-- Vinculamos Bootstrap desde CDN para estilos base y componentes. -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Vinculamos los estilos propios del proyecto. -->
-  <link href="./assets/css/styles.css" rel="stylesheet">
+  <!-- Describimos la página para SEO y previsualizaciones -->
+  <meta name="description" content="Panel de próximos trenes Cercanías (Atocha ↔ Chamartín) con GTFS-RT, auto-refresh y debug opcional." />
+  <!-- Declaramos el color de la barra del navegador en móviles -->
+  <meta name="theme-color" content="#0b0f17" />
+  <!-- Referenciamos un favicon (pon un renfe.ico o renfe.png en /assets/img/) -->
+  <link rel="icon" href="./assets/img/favicon.png" />
+  <!-- Cargamos el CSS principal -->
+  <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
+<!-- Abrimos el cuerpo del documento -->
 <body>
-  <!-- Contenedor principal centrado para mantener una lectura cómoda. -->
-  <main class="container py-4 app-container">
-    <!-- Cabecera superior con título y acciones. -->
-    <header class="d-flex align-items-center justify-content-between gap-3 mb-3">
-      <!-- Bloque izquierdo con título y estado. -->
-      <div>
-        <!-- Título principal visible para el usuario. -->
-        <h1 class="h3 mb-1">Cercanías · Próximos trenes</h1>
-        <!-- Línea de estado con reloj y estado del refresco. -->
-        <div class="text-secondary small">
-          <!-- Reloj local actualizado por JavaScript. -->
-          <span id="uiClock" class="mono">--:--:--</span>
-          <!-- Separador visual. -->
-          <span class="mx-2">·</span>
-          <!-- Estado del último refresco. -->
-          <span id="uiStatus">Preparando…</span>
-        </div>
+  <!-- Contenedor principal centrado -->
+  <main class="page">
+    <!-- Cabecera superior del panel -->
+    <header class="topbar" aria-label="Cabecera del panel">
+      <!-- Título -->
+      <div class="title">
+        <!-- Texto principal -->
+        <h1>Cercanías · Próximos trenes</h1>
+        <!-- Estado dinámico -->
+        <p id="statusLine" class="status" aria-live="polite">--:--:-- · Preparando…</p>
       </div>
 
-      <!-- Bloque derecho con iconos persistentes. -->
-      <div class="d-flex align-items-center gap-2">
-        <!-- Botón de ayuda que abre el manual de usuario. -->
-        <a class="icon-btn" href="./manual/index.html" target="_blank" rel="noopener" aria-label="Abrir manual de usuario">
-          <!-- Icono de interrogación. -->
-          <span class="icon">?</span>
+      <!-- Acciones de cabecera -->
+      <div class="actions">
+        <!-- Botón de ayuda/manual -->
+        <a class="icon-btn" href="./manual.html" aria-label="Abrir manual de usuario" title="Manual">
+          <!-- Icono de interrogación -->
+          ?
         </a>
-        <!-- Botón de configuración (rueda dentada) para abrir el panel. -->
-        <button id="btnOpenConfig" type="button" class="icon-btn" aria-label="Abrir configuración">
-          <!-- Icono simple de engranaje en texto para máxima compatibilidad. -->
-          <span class="icon">⚙</span>
-        </button>
       </div>
     </header>
 
-    <!-- Tarjeta principal del “panel” de trenes. -->
-    <section class="card shadow-sm border-0 panel-card">
-      <!-- Cuerpo de la tarjeta. -->
-      <div class="card-body p-4">
-        <!-- Título de estación seleccionado. -->
-        <h2 class="h5 mb-1" id="uiStationTitle">Estación: —</h2>
-        <!-- Texto contextual sobre lo que se muestra. -->
-        <p class="text-secondary mb-3" id="uiSubtitle">Estos son los próximos trenes.</p>
+    <!-- Tarjeta principal -->
+    <section class="card" aria-label="Panel de próximos trenes">
+      <!-- Título estación -->
+      <h2 id="stationName">Estación: —</h2>
+      <!-- Subtítulo -->
+      <p id="stationSubtitle" class="muted">Estos son los próximos trenes.</p>
 
-        <!-- Alerta de errores o avisos, oculta por defecto. -->
-        <div id="uiAlert" class="alert alert-warning d-none" role="alert">
-          <!-- Texto de la alerta. -->
-          <span id="uiAlertText">—</span>
-        </div>
+      <!-- Contenedor de trenes -->
+      <div id="trains" class="trains" aria-live="polite"></div>
 
-        <!-- Aviso global de incidencias relevantes (se muestra solo si aplica). -->
-        <div id="uiIncidenciasBanner" class="inc-banner d-none" role="status" aria-live="polite">
-          <!-- Icono de aviso. -->
-          <span class="inc-banner-icon" aria-hidden="true">⚠️</span>
-          <!-- Texto del banner. -->
-          <span id="uiIncidenciasBannerText" class="inc-banner-text">—</span>
-          <!-- Botón de ver detalles. -->
-          <button id="btnIncidenciasDetails" type="button" class="btn btn-sm btn-outline-light ms-auto">Ver</button>
-        </div>
-
-        <!-- Lista donde se renderizan los próximos trenes. -->
-        <div id="uiTrains" class="trains-grid" aria-live="polite"></div>
-
-        <!-- Pie informativo del refresco. -->
-        <div class="mt-3 text-secondary small">
-          <!-- Texto fijo de comportamiento sin botones. -->
-          <span>Se actualiza automáticamente (sin botones).</span>
-          <!-- Separador visual. -->
-          <span class="mx-2">·</span>
-          <!-- Intervalo de refresco. -->
-          <span id="uiRefreshInfo">Refresco: —</span>
-        </div>
+      <!-- Pie de tarjeta -->
+      <div class="card-footer">
+        <!-- Información de refresco -->
+        <p class="muted">Se actualiza automáticamente (sin botones). · Refresco: <span id="refreshLabel">—</span></p>
+        <!-- Toggle de debug -->
+        <button id="debugToggle" class="link-btn" type="button" aria-expanded="false" aria-controls="debugBox">
+          Debug opcional (para comparar feed y panel).
+        </button>
       </div>
+
+      <!-- Caja debug (colapsable) -->
+      <div id="debugBox" class="debug hidden" role="region" aria-label="Información de depuración"></div>
     </section>
 
-    <!-- Pie de página con créditos y enlaces. -->
-    <footer class="mt-4 text-secondary small d-flex flex-wrap gap-2 align-items-center justify-content-between">
-      <!-- Texto de autoría. -->
-      <div>
-        <!-- Indicamos autor de la aplicación. -->
-        Creado por <strong>Juan Antonio Sánchez Plaza</strong>
-      </div>
-      <!-- Enlaces a redes/portfolio solicitados. -->
-      <div class="d-flex flex-wrap gap-3">
-        <!-- Enlace a LinkedIn. -->
-        <a href="https://www.linkedin.com/in/juanantoniosanchezplaza/" target="_blank" rel="noopener">LinkedIn</a>
-        <!-- Enlace a GitHub. -->
+    <!-- Pie de página -->
+    <footer class="footer" aria-label="Pie de página">
+      <!-- Texto de autoría -->
+      <p>
+        Creado por
+        <a href="https://www.linkedin.com/in/juanantoniosanchezplaza/" target="_blank" rel="noopener">Juan Antonio Sanchez Plaza</a>
+        ·
         <a href="https://github.com/djSaBaS/" target="_blank" rel="noopener">GitHub</a>
-        <!-- Enlace a Porfolio. -->
+        ·
         <a href="https://djsabas.github.io/Porfolio/" target="_blank" rel="noopener">Porfolio</a>
-      </div>
+      </p>
     </footer>
   </main>
 
-  <!-- Modal simple para detalles de incidencia. -->
-  <div id="modalOverlay" class="modalx d-none" aria-hidden="true">
-    <div class="modalx-backdrop" id="modalBackdrop"></div>
-    <div class="modalx-dialog" role="dialog" aria-modal="true" aria-label="Detalles de incidencia">
-      <div class="modalx-header">
-        <h3 class="h6 mb-0">Detalles de incidencia</h3>
-        <button id="btnCloseModal" type="button" class="btn btn-sm btn-outline-secondary">Cerrar</button>
-      </div>
-      <div class="modalx-body">
-        <div id="modalBody" class="modalx-content">—</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal simple para QR de configuración (opcional). -->
-  <div id="qrOverlay" class="modalx d-none" aria-hidden="true">
-    <div class="modalx-backdrop" id="qrBackdrop"></div>
-    <div class="modalx-dialog" role="dialog" aria-modal="true" aria-label="Compartir configuración por QR">
-      <div class="modalx-header">
-        <h3 class="h6 mb-0">Configuración por QR</h3>
-        <button id="btnCloseQr" type="button" class="btn btn-sm btn-outline-secondary">Cerrar</button>
-      </div>
-      <div class="modalx-body">
-        <p class="text-secondary small mb-2">Este QR codifica tu configuración actual. Sirve para copiarla fácilmente a otro dispositivo.</p>
-        <div class="qr-row">
-          <div class="qr-box">
-            <canvas id="qrCanvas" width="240" height="240" aria-label="Código QR de configuración"></canvas>
-          </div>
-          <div class="qr-actions">
-            <label for="qrImportFile" class="form-label">Importar desde una imagen</label>
-            <input id="qrImportFile" class="form-control" type="file" accept="image/*">
-            <div class="form-text">Puedes hacer una captura del QR, guardarla y cargarla aquí.</div>
-            <button id="btnQrImport" type="button" class="btn btn-outline-primary mt-2 w-100">Importar</button>
-            <button id="btnQrCopy" type="button" class="btn btn-outline-secondary mt-2 w-100">Copiar JSON</button>
-          </div>
-        </div>
-        <pre id="qrDebug" class="debug-box mt-3">—</pre>
-      </div>
-    </div>
-  </div>
-
-  <!-- Drawer de configuración (sin backend, todo en localStorage). -->
-  <div id="configDrawer" class="config-drawer" aria-hidden="true">
-    <div id="configBackdrop" class="config-backdrop" tabindex="-1" aria-label="Cerrar configuración"></div>
-    <aside class="config-panel" role="dialog" aria-modal="true" aria-label="Configuración">
-      <div class="config-header">
-        <h3 class="h6 mb-0">Configuración</h3>
-        <div class="d-flex gap-2">
-          <button id="btnOpenQr" type="button" class="btn btn-sm btn-outline-primary">QR</button>
-          <button id="btnCloseConfig" type="button" class="btn btn-sm btn-outline-secondary">Cerrar</button>
-        </div>
-      </div>
-
-      <div class="config-body">
-        <div class="mb-3">
-          <label for="cfgProvincia" class="form-label">Provincia</label>
-          <select id="cfgProvincia" class="form-select"></select>
-        </div>
-
-        <div class="mb-3">
-          <label for="cfgPoblacion" class="form-label">Localidad</label>
-          <select id="cfgPoblacion" class="form-select"></select>
-        </div>
-
-        <div class="mb-3">
-          <label for="cfgOrigen" class="form-label">Estación origen</label>
-          <select id="cfgOrigen" class="form-select"></select>
-        </div>
-
-        <div class="mb-3">
-          <label for="cfgDestino" class="form-label">Estación destino</label>
-          <select id="cfgDestino" class="form-select"></select>
-        </div>
-
-        <div class="mb-3">
-          <label for="cfgStyle" class="form-label">Estilo del panel</label>
-          <select id="cfgStyle" class="form-select">
-            <option value="normal">Normal</option>
-            <option value="splitflap">Cartel mecánico (split-flap)</option>
-          </select>
-          <div class="form-text">Si tu dispositivo tiene “reducir movimiento”, se suavizan animaciones.</div>
-        </div>
-
-        <div class="mb-3">
-          <label for="cfgRefresh" class="form-label">Refresco</label>
-          <select id="cfgRefresh" class="form-select">
-            <option value="30">30s</option>
-            <option value="60" selected>60s</option>
-            <option value="90">90s</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="cfgWorkerUrl" class="form-label">Cloudflare Worker (proxy)</label>
-          <input id="cfgWorkerUrl" class="form-control" type="url" placeholder="https://tu-worker.workers.dev">
-          <div class="form-text">Necesario para evitar CORS en GitHub Pages.</div>
-        </div>
-
-        <div class="form-check form-switch mb-3">
-          <input class="form-check-input" type="checkbox" role="switch" id="cfgDebug">
-          <label class="form-check-label" for="cfgDebug">Mostrar debug</label>
-        </div>
-
-        <div class="d-grid gap-2">
-          <button id="btnSaveConfig" type="button" class="btn btn-primary">Guardar</button>
-          <button id="btnResetConfig" type="button" class="btn btn-outline-danger">Restablecer</button>
-        </div>
-
-        <hr class="my-4">
-
-        <div id="uiDebugWrap" class="d-none">
-          <h4 class="h6">Debug</h4>
-          <pre id="uiDebug" class="debug-box">—</pre>
-        </div>
-      </div>
-    </aside>
-  </div>
-
-  <!-- Cargamos el código JavaScript principal del proyecto. -->
-  <script src="./assets/js/app.js" type="module"></script>
+  <!-- Cargamos librería utilitaria -->
+  <script src="./assets/js/lib.js"></script>
+  <!-- Cargamos lógica principal -->
+  <script src="./assets/js/app.js"></script>
 </body>
+<!-- Cerramos el documento -->
 </html>
