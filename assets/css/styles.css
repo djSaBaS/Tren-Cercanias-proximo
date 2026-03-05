@@ -1,0 +1,520 @@
+/* Definimos variables de color y tipografía para consistencia visual. */
+:root{
+  /* Definimos el color de fondo general. */
+  --bg:#f6f7fb;
+  /* Definimos un color de texto secundario suave. */
+  --muted:#6b7280;
+  /* Definimos el fondo del panel estilo “cartel”. */
+  --panel:#0b1220;
+  /* Definimos el color principal del texto del panel. */
+  --panelText:#e6f3ff;
+  /* Definimos un color de acento rojo ferroviario (no oficial). */
+  --accent:#d0102a;
+  /* Definimos radio de bordes redondeados. */
+  --radius:16px;
+  /* Definimos sombra base para tarjetas. */
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  /* Definimos un amarillo de alerta para iconos. */
+  --warn:#f5c842;
+}
+
+/* Aplicamos fondo general y mejoramos el rendering de fuentes. */
+body{
+  /* Pintamos el color de fondo general. */
+  background:var(--bg);
+  /* Mejoramos el rendering en macOS. */
+  -webkit-font-smoothing:antialiased;
+  /* Mejoramos el rendering en navegadores modernos. */
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Limitamos el ancho para pantallas grandes. */
+.app-container{
+  /* Definimos un ancho máximo cómodo. */
+  max-width:980px;
+}
+
+/* Definimos una fuente monoespaciada para datos técnicos. */
+.mono{
+  /* Seleccionamos una pila monoespaciada moderna. */
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
+
+/* Estilizamos el botón de icono persistente. */
+.icon-btn{
+  /* Quitamos estilos por defecto. */
+  border:0;
+  /* Hacemos el fondo transparente. */
+  background:transparent;
+  /* Definimos tamaño cuadrado. */
+  width:40px;
+  /* Definimos altura cuadrada. */
+  height:40px;
+  /* Centramos el contenido. */
+  display:grid;
+  /* Centramos el contenido. */
+  place-items:center;
+  /* Redondeamos completamente. */
+  border-radius:999px;
+  /* Añadimos un borde sutil. */
+  border:1px solid rgba(0,0,0,.12);
+  /* Añadimos sombra ligera. */
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  /* Definimos color de texto. */
+  color:#111827;
+  /* Quitamos subrayado si es enlace. */
+  text-decoration:none;
+}
+
+/* Mejoramos la respuesta al pasar el ratón. */
+.icon-btn:hover{
+  /* Subimos un poco el contraste del borde. */
+  border-color:rgba(0,0,0,.22);
+}
+
+/* Definimos el tamaño del icono interno. */
+.icon{
+  /* Aumentamos ligeramente el tamaño. */
+  font-size:18px;
+  /* Evitamos selección accidental. */
+  user-select:none;
+}
+
+/* Estilizamos la tarjeta principal del panel. */
+.panel-card{
+  /* Redondeamos para estética moderna. */
+  border-radius:var(--radius);
+  /* Aplicamos sombra suave. */
+  box-shadow:var(--shadow);
+}
+
+/* Definimos una rejilla vertical para la lista de trenes. */
+.trains-grid{
+  /* Usamos grid para separar elementos. */
+  display:grid;
+  /* Definimos separación vertical. */
+  gap:14px;
+}
+
+/* Definimos el “tile” de cada tren con estética de cartel. */
+.train-tile{
+  /* Definimos fondo oscuro tipo panel. */
+  background:var(--panel);
+  /* Definimos texto claro. */
+  color:var(--panelText);
+  /* Redondeamos bordes. */
+  border-radius:var(--radius);
+  /* Aplicamos padding cómodo. */
+  padding:16px;
+  /* Añadimos borde sutil. */
+  border:1px solid rgba(255,255,255,.06);
+  /* Simulamos brillo suave. */
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+/* Definimos la distribución del contenido del tren. */
+.train-row{
+  /* Colocamos en dos columnas. */
+  display:flex;
+  /* Separación entre bloques. */
+  gap:16px;
+  /* Alineamos verticalmente. */
+  align-items:flex-start;
+  /* Justificamos para extremos. */
+  justify-content:space-between;
+}
+
+/* Definimos el bloque de la hora grande. */
+.train-time{
+  /* Hacemos el bloque flexible. */
+  flex:1;
+}
+
+/* Estilizamos la hora como texto grande. */
+.train-time .big{
+  /* Tamaño grande estilo panel. */
+  font-size:2.1rem;
+  /* Peso fuerte para lectura. */
+  font-weight:800;
+  /* Ajuste de línea para compactar. */
+  line-height:1.05;
+}
+
+/* Estilizamos texto pequeño de apoyo. */
+.train-time .small{
+  /* Bajamos opacidad para jerarquía. */
+  opacity:.85;
+  /* Hacemos el texto más pequeño. */
+  font-size:.95rem;
+}
+
+/* Estilizamos el bloque de etiquetas (andén/línea). */
+.train-tags{
+  /* Alineamos a la derecha. */
+  text-align:right;
+}
+
+/* Creamos un “badge” estilo panel para andén. */
+.tag{
+  /* Convertimos a inline-flex. */
+  display:inline-flex;
+  /* Alineamos contenidos. */
+  align-items:center;
+  /* Definimos separación interna. */
+  gap:8px;
+  /* Definimos padding. */
+  padding:6px 10px;
+  /* Redondeamos. */
+  border-radius:999px;
+  /* Definimos fondo de acento. */
+  background:rgba(208,16,42,.16);
+  /* Definimos borde sutil. */
+  border:1px solid rgba(208,16,42,.35);
+  /* Definimos tipografía. */
+  font-weight:700;
+}
+
+/* Definimos contenedor de iconos de incidencias por tren. */
+.train-inc-icons{
+  /* Mostramos en línea. */
+  display:flex;
+  /* Separamos iconos. */
+  gap:8px;
+  /* Alineamos a la derecha. */
+  justify-content:flex-end;
+  /* Añadimos margen superior. */
+  margin-top:10px;
+}
+
+/* Estilizamos el botón icono de incidencia. */
+.inc-btn{
+  /* Quitamos estilos por defecto. */
+  border:0;
+  /* Fondo transparente. */
+  background:transparent;
+  /* Redondeo. */
+  border-radius:10px;
+  /* Padding para zona táctil. */
+  padding:6px 8px;
+  /* Borde sutil. */
+  border:1px solid rgba(245,200,66,.35);
+  /* Fondo suave. */
+  background:rgba(245,200,66,.12);
+  /* Color principal. */
+  color:#fff;
+  /* Tamaño. */
+  font-size:14px;
+}
+
+/* Mejoramos hover para escritorio. */
+.inc-btn:hover{
+  /* Subimos contraste. */
+  border-color:rgba(245,200,66,.7);
+}
+
+/* Banner global de incidencias. */
+.inc-banner{
+  /* Mostramos como fila. */
+  display:flex;
+  /* Alineamos al centro. */
+  align-items:center;
+  /* Separamos elementos. */
+  gap:10px;
+  /* Fondo de alerta. */
+  background:linear-gradient(90deg, rgba(245,200,66,.28), rgba(245,200,66,.12));
+  /* Borde. */
+  border:1px solid rgba(245,200,66,.35);
+  /* Texto claro. */
+  color:#fff;
+  /* Padding. */
+  padding:10px 12px;
+  /* Redondeo. */
+  border-radius:14px;
+  /* Margen inferior. */
+  margin-bottom:14px;
+  /* Fondo oscuro para integrarse. */
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+/* Icono del banner. */
+.inc-banner-icon{
+  /* Tamaño. */
+  font-size:18px;
+}
+
+/* Texto del banner. */
+.inc-banner-text{
+  /* Permitimos que crezca. */
+  flex:1;
+  /* Reducimos opacidad. */
+  opacity:.95;
+}
+
+/* Definimos el drawer de configuración como overlay. */
+.config-drawer{
+  /* Posicionamos fijo para cubrir pantalla. */
+  position:fixed;
+  /* Colocamos arriba. */
+  top:0;
+  /* Colocamos a la izquierda. */
+  left:0;
+  /* Ocupamos ancho completo. */
+  width:100%;
+  /* Ocupamos alto completo. */
+  height:100%;
+  /* Definimos una capa alta. */
+  z-index:9999;
+  /* Ocultamos por defecto. */
+  display:none;
+}
+
+/* Mostramos el drawer cuando está activo. */
+.config-drawer.is-open{
+  /* Mostramos el overlay. */
+  display:block;
+}
+
+/* Capa de fondo oscura. */
+.config-backdrop{
+  /* Posicionamos fijo. */
+  position:absolute;
+  /* Ajustamos a toda la pantalla. */
+  inset:0;
+  /* Aplicamos oscurecimiento. */
+  background:rgba(0,0,0,.45);
+}
+
+/* Panel lateral de configuración. */
+.config-panel{
+  /* Posicionamos a la derecha. */
+  position:absolute;
+  /* Anclamos arriba. */
+  top:0;
+  /* Anclamos a la derecha. */
+  right:0;
+  /* Definimos ancho razonable. */
+  width:min(440px, 92vw);
+  /* Ocupamos todo el alto. */
+  height:100%;
+  /* Definimos fondo blanco. */
+  background:#fff;
+  /* Añadimos sombra fuerte. */
+  box-shadow:-18px 0 40px rgba(0,0,0,.18);
+  /* Convertimos en columna. */
+  display:flex;
+  /* Definimos dirección vertical. */
+  flex-direction:column;
+}
+
+/* Cabecera del panel de configuración. */
+.config-header{
+  /* Añadimos padding. */
+  padding:14px 16px;
+  /* Separador inferior. */
+  border-bottom:1px solid rgba(0,0,0,.08);
+  /* Alineamos en fila. */
+  display:flex;
+  /* Separación. */
+  gap:10px;
+  /* Centrado vertical. */
+  align-items:center;
+  /* Justificamos extremos. */
+  justify-content:space-between;
+}
+
+/* Cuerpo con scroll del panel. */
+.config-body{
+  /* Permitimos scroll vertical. */
+  overflow:auto;
+  /* Añadimos padding. */
+  padding:14px 16px 18px;
+}
+
+/* Definimos el aspecto de la caja debug. */
+.debug-box{
+  /* Fondo oscuro tipo consola. */
+  background:#0b1220;
+  /* Texto claro. */
+  color:#d6f5ff;
+  /* Padding interno. */
+  padding:12px;
+  /* Bordes redondeados. */
+  border-radius:12px;
+  /* Limitamos altura. */
+  max-height:340px;
+  /* Permitimos scroll interno. */
+  overflow:auto;
+  /* Respetamos saltos de línea. */
+  white-space:pre-wrap;
+  /* Usamos fuente monoespaciada. */
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  /* Bajamos tamaño. */
+  font-size:.85rem;
+}
+
+/* Split-flap: contenedor de caracteres. */
+.splitflap{
+  /* Mostramos caracteres en línea. */
+  display:inline-flex;
+  /* Separación ligera. */
+  gap:2px;
+}
+
+/* Split-flap: tarjeta de cada carácter. */
+.flap{
+  /* Posicionamos relativo para capas. */
+  position:relative;
+  /* Definimos tamaño del carácter. */
+  width:1.05em;
+  /* Definimos altura fija. */
+  height:1.45em;
+  /* Fondo oscuro. */
+  background:#060a12;
+  /* Borde sutil. */
+  border:1px solid rgba(255,255,255,.08);
+  /* Redondeo ligero. */
+  border-radius:6px;
+  /* Ocultamos desbordes en el flip. */
+  overflow:hidden;
+  /* Centramos texto. */
+  display:grid;
+  /* Centramos texto. */
+  place-items:center;
+}
+
+/* Split-flap: texto del carácter. */
+.flap span{
+  /* Definimos peso alto. */
+  font-weight:800;
+  /* Color claro. */
+  color:var(--panelText);
+  /* Ajuste de tamaño. */
+  font-size:1em;
+}
+
+/* Modal simple (sin dependencias). */
+.modalx{
+  /* Posición fija en pantalla. */
+  position:fixed;
+  /* Ocupamos toda la pantalla. */
+  inset:0;
+  /* Capa alta. */
+  z-index:10000;
+}
+
+/* Fondo del modal. */
+.modalx-backdrop{
+  /* Fondo oscuro con transparencia. */
+  position:absolute;
+  /* Ocupamos todo. */
+  inset:0;
+  /* Oscurecemos. */
+  background:rgba(0,0,0,.55);
+}
+
+/* Diálogo del modal. */
+.modalx-dialog{
+  /* Centramos horizontal y vertical. */
+  position:relative;
+  /* Centramos con margen automático. */
+  margin:6vh auto;
+  /* Fondo blanco. */
+  background:#fff;
+  /* Redondeo. */
+  border-radius:16px;
+  /* Sombra. */
+  box-shadow:0 22px 70px rgba(0,0,0,.25);
+  /* Tamaño máximo. */
+  width:min(720px, 92vw);
+  /* Alto máximo. */
+  max-height:86vh;
+  /* Flex para layout. */
+  display:flex;
+  /* Dirección vertical. */
+  flex-direction:column;
+  /* Ocultamos overflow. */
+  overflow:hidden;
+}
+
+/* Cabecera del modal. */
+.modalx-header{
+  /* Layout fila. */
+  display:flex;
+  /* Alineación. */
+  align-items:center;
+  /* Justificación. */
+  justify-content:space-between;
+  /* Separación. */
+  gap:10px;
+  /* Padding. */
+  padding:12px 14px;
+  /* Borde inferior. */
+  border-bottom:1px solid rgba(0,0,0,.08);
+}
+
+/* Cuerpo del modal. */
+.modalx-body{
+  /* Padding. */
+  padding:14px;
+  /* Scroll interno. */
+  overflow:auto;
+}
+
+/* Contenido del modal. */
+.modalx-content{
+  /* Texto legible. */
+  line-height:1.5;
+  /* Color. */
+  color:#111827;
+}
+
+/* Layout del bloque QR. */
+.qr-row{
+  /* Usamos grid para dos columnas. */
+  display:grid;
+  /* Definimos columnas. */
+  grid-template-columns: 260px 1fr;
+  /* Espacio. */
+  gap:14px;
+}
+
+/* Caja del QR. */
+.qr-box{
+  /* Centramos canvas. */
+  display:grid;
+  /* Centramos. */
+  place-items:center;
+  /* Fondo suave. */
+  background:#f8fafc;
+  /* Borde. */
+  border:1px solid rgba(0,0,0,.08);
+  /* Redondeo. */
+  border-radius:14px;
+  /* Padding. */
+  padding:10px;
+}
+
+/* Acciones de QR. */
+.qr-actions{
+  /* Layout columna. */
+  display:flex;
+  /* Dirección. */
+  flex-direction:column;
+}
+
+/* Ajuste responsive del QR. */
+@media (max-width: 640px){
+  /* Cambiamos a una columna. */
+  .qr-row{ grid-template-columns: 1fr; }
+}
+
+/* Respetamos preferencia de reducir movimiento. */
+@media (prefers-reduced-motion: reduce){
+  /* Desactivamos animaciones fuertes. */
+  *{
+    /* Eliminamos transición. */
+    transition:none !important;
+    /* Eliminamos animación. */
+    animation:none !important;
+  }
+}

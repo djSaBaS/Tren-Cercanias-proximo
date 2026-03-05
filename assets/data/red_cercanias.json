@@ -1,0 +1,5766 @@
+{
+  "version": 1,
+  "fuente": "transbordos_renfe_definitivo.xlsx + estaciones.csv + fomento_transit.zip(stops)",
+  "descripcion": "Grafo de conexiones (por grupo) para cálculo de rutas/transbordos. Incluye nombre/coords cuando se pueden resolver.",
+  "estadisticas": {
+    "nodos": 169,
+    "aristas": 433
+  },
+  "estaciones": {
+    "10000": {
+      "codigo": "10000",
+      "nombre": "MADRID-PRÍNCIPE PÍO",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4214895,
+      "lon": -3.7189689,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C10"
+          ]
+        },
+        {
+          "destino": "18000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C10"
+          ]
+        },
+        {
+          "destino": "97100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C10",
+            "C7"
+          ]
+        },
+        {
+          "destino": "99203",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C10",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "10100": {
+      "codigo": "10100",
+      "nombre": "PINAR DE LAS ROZAS",
+      "poblacion": "ROZAS DE MADRID (LAS)",
+      "provincia": "MADRID",
+      "lat": 40.5222672,
+      "lon": -3.8822477,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C10"
+          ]
+        },
+        {
+          "destino": "10200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C10",
+            "C8A",
+            "C8B"
+          ]
+        },
+        {
+          "destino": "97100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8A",
+            "C8B"
+          ]
+        }
+      ]
+    },
+    "10200": {
+      "codigo": "10200",
+      "nombre": "VILLALBA DE GUADARRAMA",
+      "poblacion": "COLLADO VILLALBA",
+      "provincia": "MADRID",
+      "lat": 40.6264893,
+      "lon": -4.0080301,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C10",
+            "C8A",
+            "C8B"
+          ]
+        },
+        {
+          "destino": "12001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8B"
+          ]
+        }
+      ]
+    },
+    "10500": {
+      "codigo": "10500",
+      "nombre": "MEDINA DEL CAMPO",
+      "poblacion": "MEDINA DEL CAMPO",
+      "provincia": "VALLADOLID",
+      "lat": 41.317617,
+      "lon": -4.909923,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "8240",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "11300": {
+      "codigo": "11300",
+      "nombre": "ALTSASU",
+      "poblacion": "ALTSASU/ALSASUA",
+      "provincia": "NAVARRA",
+      "lat": 42.894847,
+      "lon": -2.181237,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "11400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "11400": {
+      "codigo": "11400",
+      "nombre": "ZUMARRAGA",
+      "poblacion": "ZUMARRAGA",
+      "provincia": "GIPUZKOA",
+      "lat": 43.0870824,
+      "lon": -2.3202298,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "11300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "11500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "11500": {
+      "codigo": "11500",
+      "nombre": "TOLOSA",
+      "poblacion": "TOLOSA",
+      "provincia": "GIPUZKOA",
+      "lat": 43.1354472,
+      "lon": -2.0790886,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "11400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "11600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "11600": {
+      "codigo": "11600",
+      "nombre": "IRUN",
+      "poblacion": "IRUN",
+      "provincia": "GIPUZKOA",
+      "lat": 43.3395365,
+      "lon": -1.8012519,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "11500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "12001": {
+      "codigo": "12001",
+      "nombre": "LOS NEGRALES",
+      "poblacion": "ALPEDRETE",
+      "provincia": "MADRID",
+      "lat": 40.638567,
+      "lon": -4.0218746,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8B"
+          ]
+        },
+        {
+          "destino": "99203",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C8B",
+            "C9"
+          ]
+        }
+      ]
+    },
+    "13106": {
+      "codigo": "13106",
+      "nombre": "LLODIO",
+      "poblacion": "LAUDIO/LLODIO",
+      "provincia": "ARABA/ÁLAVA",
+      "lat": 43.1423514,
+      "lon": -2.9606511,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "13200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "13200": {
+      "codigo": "13200",
+      "nombre": "BILBAO-INTERMOD. ABANDO INDALECIO PRIETO",
+      "poblacion": "BILBAO",
+      "provincia": "BIZKAIA",
+      "lat": 43.2601304,
+      "lon": -2.9285592,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "13106",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "13300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        },
+        {
+          "destino": "54500",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C4"
+          ]
+        }
+      ]
+    },
+    "13300": {
+      "codigo": "13300",
+      "nombre": "ZORROTZA ZORROZGOITI",
+      "poblacion": "BILBAO",
+      "provincia": "BIZKAIA",
+      "lat": 43.2740398,
+      "lon": -2.9740116,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_133_gtfs",
+      "conexiones": [
+        {
+          "destino": "13200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        },
+        {
+          "destino": "13400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        }
+      ]
+    },
+    "13400": {
+      "codigo": "13400",
+      "nombre": "ZORROTZA ZORROZGOITI",
+      "poblacion": "BILBAO",
+      "provincia": "BIZKAIA",
+      "lat": 43.2740398,
+      "lon": -2.9740116,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_134_gtfs",
+      "conexiones": [
+        {
+          "destino": "13300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        },
+        {
+          "destino": "13500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "13500": {
+      "codigo": "13500",
+      "nombre": "ZORROTZA ZORROZGOITI",
+      "poblacion": "BILBAO",
+      "provincia": "BIZKAIA",
+      "lat": 43.2740398,
+      "lon": -2.9740116,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_135_gtfs",
+      "conexiones": [
+        {
+          "destino": "13400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "14200": {
+      "codigo": "14200",
+      "nombre": "MATAPORQUERA",
+      "poblacion": "VALDEOLEA",
+      "provincia": "CANTABRIA",
+      "lat": 42.870901,
+      "lon": -4.165406,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "51100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3"
+          ]
+        },
+        {
+          "destino": "5601",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3"
+          ]
+        },
+        {
+          "destino": "56200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "5651",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C3"
+          ]
+        },
+        {
+          "destino": "5740",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "15100": {
+      "codigo": "15100",
+      "nombre": "LEÓN",
+      "poblacion": "LEÓN",
+      "provincia": "LEÓN",
+      "lat": 42.596048,
+      "lon": -5.582428,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "15200": {
+      "codigo": "15200",
+      "nombre": "UJO",
+      "poblacion": "MIERES",
+      "provincia": "ASTURIAS",
+      "lat": 43.2046962,
+      "lon": -5.7926422,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "15100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "15300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C3"
+          ]
+        },
+        {
+          "destino": "15400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "16000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "16400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "5300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        },
+        {
+          "destino": "5361",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C8"
+          ]
+        },
+        {
+          "destino": "5371",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 10,
+          "lineas_validas": [
+            "C1",
+            "C8"
+          ]
+        },
+        {
+          "destino": "5504",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5A",
+            "C6"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C5A",
+            "C6",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "15300": {
+      "codigo": "15300",
+      "nombre": "LUGO DE LLANERA",
+      "poblacion": "LLANERA",
+      "provincia": "ASTURIAS",
+      "lat": 43.4423322,
+      "lon": -5.8158932,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C3"
+          ]
+        },
+        {
+          "destino": "15400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "16301",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "16400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "15400": {
+      "codigo": "15400",
+      "nombre": "VERIÑA",
+      "poblacion": "GIJÓN",
+      "provincia": "ASTURIAS",
+      "lat": 43.5415755,
+      "lon": -5.722797,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "15300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "5201",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C4"
+          ]
+        },
+        {
+          "destino": "5210",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5403",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "5410",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5",
+            "C5A"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "16000": {
+      "codigo": "16000",
+      "nombre": "OLLONIEGO",
+      "poblacion": "OVIEDO",
+      "provincia": "ASTURIAS",
+      "lat": 43.2961226,
+      "lon": -5.8188502,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_160_gtfs",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "16301": {
+      "codigo": "16301",
+      "nombre": "FERROÑES",
+      "poblacion": "LLANERA",
+      "provincia": "ASTURIAS",
+      "lat": 43.4760338,
+      "lon": -5.8616217,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "15300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "16400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "16400": {
+      "codigo": "16400",
+      "nombre": "NUBLEDO",
+      "poblacion": "CORVERA DE ASTURIAS",
+      "provincia": "ASTURIAS",
+      "lat": 43.5234229,
+      "lon": -5.8703014,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "15300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "16301",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "5220",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "17000": {
+      "codigo": "17000",
+      "nombre": "MADRID-CHAMARTÍN-CLARA CAMPOAMOR",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4711789,
+      "lon": -3.6829524,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8B"
+          ]
+        },
+        {
+          "destino": "18000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C7"
+          ]
+        },
+        {
+          "destino": "19000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4A"
+          ]
+        },
+        {
+          "destino": "97200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7",
+            "C8A",
+            "C8B"
+          ]
+        },
+        {
+          "destino": "98000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        }
+      ]
+    },
+    "18000": {
+      "codigo": "18000",
+      "nombre": "MADRID-ATOCHA CERCANÍAS",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4066191,
+      "lon": -3.6894391,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C10",
+            "C7"
+          ]
+        },
+        {
+          "destino": "17000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C7"
+          ]
+        },
+        {
+          "destino": "18101",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3",
+            "C4",
+            "C4A",
+            "C4B"
+          ]
+        },
+        {
+          "destino": "35600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        },
+        {
+          "destino": "35700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "60000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        },
+        {
+          "destino": "60100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3",
+            "C4",
+            "C4A",
+            "C4B"
+          ]
+        },
+        {
+          "destino": "7004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        },
+        {
+          "destino": "95100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C10",
+            "C7"
+          ]
+        },
+        {
+          "destino": "98000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        },
+        {
+          "destino": "99000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "18101": {
+      "codigo": "18101",
+      "nombre": "SOL",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4168665,
+      "lon": -3.7028765,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3",
+            "C4",
+            "C4A",
+            "C4B"
+          ]
+        }
+      ]
+    },
+    "19000": {
+      "codigo": "19000",
+      "nombre": "MIRASIERRA-PACO DE LUCÍA",
+      "poblacion": "CANENCIA",
+      "provincia": "MADRID",
+      "lat": 40.499759,
+      "lon": -3.7092505,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_190_gtfs",
+      "conexiones": [
+        {
+          "destino": "17000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4A"
+          ]
+        }
+      ]
+    },
+    "2002": {
+      "codigo": "2002",
+      "nombre": "PUENTE GENIL-HERRERA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "20300": {
+      "codigo": "20300",
+      "nombre": "MONFORTE DE LEMOS",
+      "poblacion": "MONFORTE DE LEMOS",
+      "provincia": "LUGO",
+      "lat": 42.529682,
+      "lon": -7.503589,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "50100",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 10,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "21001": {
+      "codigo": "21001",
+      "nombre": "BETANZOS-CIDADE",
+      "poblacion": "BETANZOS",
+      "provincia": "CORUÑA, A",
+      "lat": 43.284137,
+      "lon": -8.215874,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "22100": {
+      "codigo": "22100",
+      "nombre": "OURENSE",
+      "poblacion": "OURENSE",
+      "provincia": "OURENSE",
+      "lat": 42.350389,
+      "lon": -7.872777,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "22300": {
+      "codigo": "22300",
+      "nombre": "REDONDELA",
+      "poblacion": "REDONDELA",
+      "provincia": "PONTEVEDRA",
+      "lat": 42.286005,
+      "lon": -8.619402,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "8223",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "23000": {
+      "codigo": "23000",
+      "nombre": "REDONDELA-PICOTA",
+      "poblacion": "REDONDELA",
+      "provincia": "PONTEVEDRA",
+      "lat": 42.286866,
+      "lon": -8.607118,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "30100": {
+      "codigo": "30100",
+      "nombre": "SALAMANCA",
+      "poblacion": "SALAMANCA",
+      "provincia": "SALAMANCA",
+      "lat": 40.972235,
+      "lon": -5.64899,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "31200": {
+      "codigo": "31200",
+      "nombre": "PUEBLA DE SANABRIA",
+      "poblacion": "PUEBLA DE SANABRIA",
+      "provincia": "ZAMORA",
+      "lat": 42.045763,
+      "lon": -6.626848,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "8251",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 7,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "31400": {
+      "codigo": "31400",
+      "nombre": "SANTIAGO DE COMPOSTELA-DANIEL CASTELAO",
+      "poblacion": "SANTIAGO DE COMPOSTELA",
+      "provincia": "CORUÑA, A",
+      "lat": 42.870842,
+      "lon": -8.544697,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "3410": {
+      "codigo": "3410",
+      "nombre": "ELCHE/ELX AV",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "62001",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "35001": {
+      "codigo": "35001",
+      "nombre": "LEGANÉS",
+      "poblacion": "LEGANÉS",
+      "provincia": "MADRID",
+      "lat": 40.328643,
+      "lon": -3.7713161,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "37001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        }
+      ]
+    },
+    "35200": {
+      "codigo": "35200",
+      "nombre": "TALAVERA DE LA REINA",
+      "poblacion": "TALAVERA DE LA REINA",
+      "provincia": "TOLEDO",
+      "lat": 39.970674,
+      "lon": -4.826512,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "35600": {
+      "codigo": "35600",
+      "nombre": "LEGANÉS",
+      "poblacion": "LEGANÉS",
+      "provincia": "MADRID",
+      "lat": 40.328643,
+      "lon": -3.7713161,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_356_gtfs",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "35700": {
+      "codigo": "35700",
+      "nombre": "MUSEO-FERROCAR.",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4003471,
+      "lon": -3.6928278,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_357_gtfs",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "37001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4",
+            "C4A",
+            "C4B",
+            "C5"
+          ]
+        }
+      ]
+    },
+    "37001": {
+      "codigo": "37001",
+      "nombre": "MADRID-VILLAVERDE ALTO",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.3415895,
+      "lon": -3.7123508,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "35001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "35700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4",
+            "C4A",
+            "C4B",
+            "C5"
+          ]
+        },
+        {
+          "destino": "60100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4",
+            "C4A",
+            "C4B"
+          ]
+        }
+      ]
+    },
+    "40100": {
+      "codigo": "40100",
+      "nombre": "ZAFRA",
+      "poblacion": "ZAFRA",
+      "provincia": "BADAJOZ",
+      "lat": 38.413635,
+      "lon": -6.405083,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "50700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "4040": {
+      "codigo": "4040",
+      "nombre": "ZARAGOZA DELICIAS",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "70800",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "4307": {
+      "codigo": "4307",
+      "nombre": "SALTERAS",
+      "poblacion": "SALTERAS",
+      "provincia": "SEVILLA",
+      "lat": 37.4102348,
+      "lon": -6.0992391,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_430_gtfs",
+      "conexiones": [
+        {
+          "destino": "5102",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C5"
+          ]
+        }
+      ]
+    },
+    "50100": {
+      "codigo": "50100",
+      "nombre": "MANZANARES",
+      "poblacion": "MANZANARES",
+      "provincia": "CIUDAD REAL",
+      "lat": 39.005837,
+      "lon": -3.370507,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "20300",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 10,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "50600": {
+      "codigo": "50600",
+      "nombre": "LORA DEL RÍO",
+      "poblacion": "LORA DEL RÍO",
+      "provincia": "SEVILLA",
+      "lat": 37.6613212,
+      "lon": -5.5295514,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "50700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "50700": {
+      "codigo": "50700",
+      "nombre": "LOS ROSALES",
+      "poblacion": "TOCINA",
+      "provincia": "SEVILLA",
+      "lat": 37.5899718,
+      "lon": -5.7261208,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "40100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "50600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "5102",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C3"
+          ]
+        }
+      ]
+    },
+    "5102": {
+      "codigo": "5102",
+      "nombre": "SEVILLA-SANTA JUSTA",
+      "poblacion": "SEVILLA",
+      "provincia": "SEVILLA",
+      "lat": 37.3924955,
+      "lon": -5.9749269,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_510_gtfs",
+      "conexiones": [
+        {
+          "destino": "4307",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C5"
+          ]
+        },
+        {
+          "destino": "50700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C3"
+          ]
+        },
+        {
+          "destino": "51100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C4",
+            "C5"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5"
+          ]
+        }
+      ]
+    },
+    "51100": {
+      "codigo": "51100",
+      "nombre": "SAN BERNARDO",
+      "poblacion": "SEVILLA",
+      "provincia": "SEVILLA",
+      "lat": 37.3777778,
+      "lon": -5.9796142,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "14200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3"
+          ]
+        },
+        {
+          "destino": "5102",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C4",
+            "C5"
+          ]
+        },
+        {
+          "destino": "51200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "5601",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "51200": {
+      "codigo": "51200",
+      "nombre": "UTRERA",
+      "poblacion": "UTRERA",
+      "provincia": "SEVILLA",
+      "lat": 37.1848178,
+      "lon": -5.7907537,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "51100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "51300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "51300": {
+      "codigo": "51300",
+      "nombre": "JEREZ DE LA FRONTERA",
+      "poblacion": "JEREZ DE LA FRONTERA",
+      "provincia": "CÁDIZ",
+      "lat": 36.680022,
+      "lon": -6.1266032,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "51200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "51400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "51400": {
+      "codigo": "51400",
+      "nombre": "PUERTO DE SANTA MARÍA",
+      "poblacion": "PUERTO DE SANTA MARÍA (EL)",
+      "provincia": "CÁDIZ",
+      "lat": 36.6040723,
+      "lon": -6.2179261,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "51300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "5201": {
+      "codigo": "5201",
+      "nombre": "GIJÓN RAM",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "15400",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C4"
+          ]
+        },
+        {
+          "destino": "5210",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5403",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C4",
+            "C5"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "5210": {
+      "codigo": "5210",
+      "nombre": "CANDÁS-APEADERO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5201",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5220",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5220": {
+      "codigo": "5220",
+      "nombre": "CRISTALERÍA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "16400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5210",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5231",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5231": {
+      "codigo": "5231",
+      "nombre": "SANTIAGO DEL MONTE",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5220",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5241",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5320",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5241": {
+      "codigo": "5241",
+      "nombre": "LOS CABOS",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5231",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5320",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        }
+      ]
+    },
+    "5300": {
+      "codigo": "5300",
+      "nombre": "VALLOBÍN",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        },
+        {
+          "destino": "5311",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        }
+      ]
+    },
+    "5311": {
+      "codigo": "5311",
+      "nombre": "TRUBIA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        },
+        {
+          "destino": "5320",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        }
+      ]
+    },
+    "5320": {
+      "codigo": "5320",
+      "nombre": "ACES",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5231",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5241",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        },
+        {
+          "destino": "5311",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        }
+      ]
+    },
+    "5361": {
+      "codigo": "5361",
+      "nombre": "BAIÑA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C8"
+          ]
+        },
+        {
+          "destino": "5371",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8"
+          ]
+        }
+      ]
+    },
+    "5371": {
+      "codigo": "5371",
+      "nombre": "CAUDALIA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 10,
+          "lineas_validas": [
+            "C1",
+            "C8"
+          ]
+        },
+        {
+          "destino": "5361",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8"
+          ]
+        },
+        {
+          "destino": "5380",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8"
+          ]
+        }
+      ]
+    },
+    "5380": {
+      "codigo": "5380",
+      "nombre": "SAN ANTONIO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5371",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8"
+          ]
+        }
+      ]
+    },
+    "5403": {
+      "codigo": "5403",
+      "nombre": "TREMAÑES-LANGREO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "15400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "5201",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C4",
+            "C5"
+          ]
+        },
+        {
+          "destino": "5410",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        }
+      ]
+    },
+    "5410": {
+      "codigo": "5410",
+      "nombre": "XIXÚN",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "15400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5",
+            "C5A"
+          ]
+        },
+        {
+          "destino": "5403",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "5420",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "5504",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5",
+            "C5A"
+          ]
+        }
+      ]
+    },
+    "5420": {
+      "codigo": "5420",
+      "nombre": "CURUXONA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5410",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "54300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        }
+      ]
+    },
+    "54300": {
+      "codigo": "54300",
+      "nombre": "LA RODA DE ANDALUCÍA",
+      "poblacion": "RODA DE ANDALUCÍA (LA)",
+      "provincia": "SEVILLA",
+      "lat": 37.209294,
+      "lon": -4.774976,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "5420",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "54400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        }
+      ]
+    },
+    "54400": {
+      "codigo": "54400",
+      "nombre": "BOBADILLA",
+      "poblacion": "ANTEQUERA",
+      "provincia": "MÁLAGA",
+      "lat": 37.037073,
+      "lon": -4.727942,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "54300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        },
+        {
+          "destino": "54500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        }
+      ]
+    },
+    "54500": {
+      "codigo": "54500",
+      "nombre": "MÁLAGA M.Z. CERCANÍAS",
+      "poblacion": "MÁLAGA",
+      "provincia": "MÁLAGA",
+      "lat": 36.7113885,
+      "lon": -4.4328909,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "13200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C4"
+          ]
+        },
+        {
+          "destino": "54400",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        },
+        {
+          "destino": "5460",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5460": {
+      "codigo": "5460",
+      "nombre": "KASTREXANA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "54500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5470",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5470": {
+      "codigo": "5470",
+      "nombre": "LAMBARRI",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5460",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5481",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5481": {
+      "codigo": "5481",
+      "nombre": "LA HERRERA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5470",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5493",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5721",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5493": {
+      "codigo": "5493",
+      "nombre": "VILLAVERDE DE TRUCIOS",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5481",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5504": {
+      "codigo": "5504",
+      "nombre": "PARQUE PRINCIPADO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "15200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5A",
+            "C6"
+          ]
+        },
+        {
+          "destino": "5410",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5",
+            "C5A"
+          ]
+        },
+        {
+          "destino": "5511",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        }
+      ]
+    },
+    "5511": {
+      "codigo": "5511",
+      "nombre": "LA CARRERA DE SIERO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5504",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        },
+        {
+          "destino": "5521",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        }
+      ]
+    },
+    "5521": {
+      "codigo": "5521",
+      "nombre": "EL REMEDIO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5511",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        },
+        {
+          "destino": "5531",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        }
+      ]
+    },
+    "5531": {
+      "codigo": "5531",
+      "nombre": "PINTUELES",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5521",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        }
+      ]
+    },
+    "5601": {
+      "codigo": "5601",
+      "nombre": "SANTANDER RAM",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "14200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3"
+          ]
+        },
+        {
+          "destino": "51100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": []
+        },
+        {
+          "destino": "56100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "56200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "5651",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "56100": {
+      "codigo": "56100",
+      "nombre": "MOREDA",
+      "poblacion": "MORELÁBOR",
+      "provincia": "GRANADA",
+      "lat": 37.431216,
+      "lon": -3.310516,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "5601",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "56200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "56200": {
+      "codigo": "56200",
+      "nombre": "GUADIX",
+      "poblacion": "GUADIX",
+      "provincia": "GRANADA",
+      "lat": 37.316873,
+      "lon": -3.127209,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "14200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "5601",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "56100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "5631",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "5631": {
+      "codigo": "5631",
+      "nombre": "CASAR DE PERIEDO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "56200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "5641",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "5641": {
+      "codigo": "5641",
+      "nombre": "TRECEÑO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5631",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "5651": {
+      "codigo": "5651",
+      "nombre": "NUEVA MONTAÑA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "14200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C3"
+          ]
+        },
+        {
+          "destino": "5601",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "5661",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "5661": {
+      "codigo": "5661",
+      "nombre": "HERAS",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5651",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "5671",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "5671": {
+      "codigo": "5671",
+      "nombre": "LIÉRGANES",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5661",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "5681",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "5681": {
+      "codigo": "5681",
+      "nombre": "CICERO",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5671",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "5691",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "5691": {
+      "codigo": "5691",
+      "nombre": "GIBAJA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5681",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "5721": {
+      "codigo": "5721",
+      "nombre": "ARLA BERRÓN",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5481",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5730",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5730": {
+      "codigo": "5730",
+      "nombre": "BERCEDO-MONTIJA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5721",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5740",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5740": {
+      "codigo": "5740",
+      "nombre": "ARIJA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "14200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5730",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5750",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5750": {
+      "codigo": "5750",
+      "nombre": "CASTREJÓN DE LA PEÑA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5740",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5760",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5790",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5760": {
+      "codigo": "5760",
+      "nombre": "VALLE DE LAS CASAS",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5750",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5770",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5790",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5801",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 9,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5770": {
+      "codigo": "5770",
+      "nombre": "MATALLANA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5760",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5801",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "5784": {
+      "codigo": "5784",
+      "nombre": "HOSPITALES",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5801",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 7,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5790": {
+      "codigo": "5790",
+      "nombre": "SORRIBA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5750",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5760",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5801": {
+      "codigo": "5801",
+      "nombre": "VENTAS/S.MAMÉS",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "5760",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 9,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5770",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4"
+          ]
+        },
+        {
+          "destino": "5784",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 7,
+          "lineas_validas": [
+            "C4"
+          ]
+        }
+      ]
+    },
+    "5951": {
+      "codigo": "5951",
+      "nombre": "CARTAGENA-PLAZA BASTARRECHE",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "61303",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 6,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "60000": {
+      "codigo": "60000",
+      "nombre": "MADRID-PUERTA DE ATOCHA-ALMUDENA GRANDES",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.406442,
+      "lon": -3.690886,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        },
+        {
+          "destino": "61005",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "61200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "98000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": []
+        },
+        {
+          "destino": "99000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "60100": {
+      "codigo": "60100",
+      "nombre": "MADRID-VILLAVERDE BAJO",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.3526762,
+      "lon": -3.6838977,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3",
+            "C4",
+            "C4A",
+            "C4B"
+          ]
+        },
+        {
+          "destino": "37001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C4",
+            "C4A",
+            "C4B"
+          ]
+        },
+        {
+          "destino": "60200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "99203",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "60200": {
+      "codigo": "60200",
+      "nombre": "ARANJUEZ",
+      "poblacion": "ARANJUEZ",
+      "provincia": "MADRID",
+      "lat": 40.0350257,
+      "lon": -3.6182534,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "60100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "99203",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "60900": {
+      "codigo": "60900",
+      "nombre": "LA ENCINA",
+      "poblacion": "VILLENA",
+      "provincia": "ALICANTE/ALACANT",
+      "lat": 38.765344,
+      "lon": -0.954244,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "62100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "61005": {
+      "codigo": "61005",
+      "nombre": "HELLÍN",
+      "poblacion": "HELLÍN",
+      "provincia": "ALBACETE",
+      "lat": 38.508776,
+      "lon": -1.688437,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "60000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "7004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "61200": {
+      "codigo": "61200",
+      "nombre": "MURCIA DEL CARMEN",
+      "poblacion": "MURCIA",
+      "provincia": "MURCIA",
+      "lat": 37.9748243,
+      "lon": -1.131508,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "60000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "62001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "61303": {
+      "codigo": "61303",
+      "nombre": "BALSICAS-MAR MENOR",
+      "poblacion": "TORRE-PACHECO",
+      "provincia": "MURCIA",
+      "lat": 37.81884,
+      "lon": -0.950891,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "5951",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 6,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "62001": {
+      "codigo": "62001",
+      "nombre": "BENIEL",
+      "poblacion": "BENIEL",
+      "provincia": "MURCIA",
+      "lat": 38.0448608,
+      "lon": -0.9994759,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "3410",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "61200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "62100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "62100": {
+      "codigo": "62100",
+      "nombre": "SAN ISIDRO-ALBATERA-CATRAL",
+      "poblacion": "SAN ISIDRO",
+      "provincia": "ALICANTE/ALACANT",
+      "lat": 38.1670209,
+      "lon": -0.8380854,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "60900",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "62001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "64003": {
+      "codigo": "64003",
+      "nombre": "MOIXENT",
+      "poblacion": "MOGENTE/MOIXENT",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 38.8777975,
+      "lon": -0.7536507,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "64100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "64100": {
+      "codigo": "64100",
+      "nombre": "XÀTIVA",
+      "poblacion": "XÀTIVA",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 38.992148,
+      "lon": -0.5245402,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "64003",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "64200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    "64200": {
+      "codigo": "64200",
+      "nombre": "SILLA",
+      "poblacion": "SILLA",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 39.3619548,
+      "lon": -0.4149813,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "64100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "65000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        },
+        {
+          "destino": "69103",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "65000": {
+      "codigo": "65000",
+      "nombre": "VALÈNCIA-ESTACIÓ DEL NORD",
+      "poblacion": "VALENCIA",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 39.4669305,
+      "lon": -0.3772239,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "64200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        },
+        {
+          "destino": "65200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5",
+            "C6"
+          ]
+        },
+        {
+          "destino": "65555",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 5,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C5",
+            "C6"
+          ]
+        },
+        {
+          "destino": "66200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "65200": {
+      "codigo": "65200",
+      "nombre": "SAGUNT",
+      "poblacion": "SAGUNTO/SAGUNT",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 39.6758025,
+      "lon": -0.271542,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5",
+            "C6"
+          ]
+        },
+        {
+          "destino": "65300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        },
+        {
+          "destino": "67200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        }
+      ]
+    },
+    "65300": {
+      "codigo": "65300",
+      "nombre": "CASTELLÓ DE LA PLANA",
+      "poblacion": "CASTELLÓN DE LA PLANA/CASTELLÓ DE LA PLANA",
+      "provincia": "CASTELLÓN/CASTELLÓ",
+      "lat": 39.9884736,
+      "lon": -0.0523456,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C6"
+          ]
+        },
+        {
+          "destino": "65400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R16"
+          ]
+        }
+      ]
+    },
+    "65400": {
+      "codigo": "65400",
+      "nombre": "TORTOSA",
+      "poblacion": "TORTOSA",
+      "provincia": "TARRAGONA",
+      "lat": 40.807333,
+      "lon": 0.5230136,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R16"
+          ]
+        },
+        {
+          "destino": "71400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R16"
+          ]
+        },
+        {
+          "destino": "71500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R17",
+            "RT2"
+          ]
+        },
+        {
+          "destino": "97001",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 9,
+          "lineas_validas": [
+            "R17",
+            "RT2"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "65555": {
+      "codigo": "65555",
+      "nombre": "VALENCIA ENLACE",
+      "poblacion": "VALENCIA",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 39.465064,
+      "lon": -0.377433,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 5,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C5",
+            "C6"
+          ]
+        }
+      ]
+    },
+    "66200": {
+      "codigo": "66200",
+      "nombre": "UTIEL",
+      "poblacion": "UTIEL",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 39.5707742,
+      "lon": -1.2024215,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C3"
+          ]
+        }
+      ]
+    },
+    "67200": {
+      "codigo": "67200",
+      "nombre": "TERUEL",
+      "poblacion": "TERUEL",
+      "provincia": "TERUEL",
+      "lat": 40.341029,
+      "lon": -1.110284,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C5"
+          ]
+        }
+      ]
+    },
+    "69103": {
+      "codigo": "69103",
+      "nombre": "SUECA",
+      "poblacion": "SUECA",
+      "provincia": "VALENCIA/VALÈNCIA",
+      "lat": 39.2058471,
+      "lon": -0.3082388,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "64200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "7004": {
+      "codigo": "7004",
+      "nombre": "VALLECAS",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.382364,
+      "lon": -3.623042,
+      "cercanias": true,
+      "fuente_nombre": "inferido_pref3_700_gtfs",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        },
+        {
+          "destino": "61005",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "70100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "70100": {
+      "codigo": "70100",
+      "nombre": "VICÁLVARO",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4012524,
+      "lon": -3.595897,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "7004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        },
+        {
+          "destino": "70200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        },
+        {
+          "destino": "98000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "98103",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        },
+        {
+          "destino": "99203",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "70200": {
+      "codigo": "70200",
+      "nombre": "GUADALAJARA",
+      "poblacion": "GUADALAJARA",
+      "provincia": "GUADALAJARA",
+      "lat": 40.6441928,
+      "lon": -3.1822602,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "70100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "70800": {
+      "codigo": "70800",
+      "nombre": "CASETAS",
+      "poblacion": "ZARAGOZA",
+      "provincia": "ZARAGOZA",
+      "lat": 41.7226479,
+      "lon": -1.0201916,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "4040",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "71100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "71100": {
+      "codigo": "71100",
+      "nombre": "ZARAGOZA-MIRAFLORES",
+      "poblacion": "ZARAGOZA",
+      "provincia": "ZARAGOZA",
+      "lat": 41.6334311,
+      "lon": -0.8681653,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "70800",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "71200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R2S"
+          ]
+        }
+      ]
+    },
+    "71200": {
+      "codigo": "71200",
+      "nombre": "LA PUEBLA DE HÍJAR",
+      "poblacion": "PUEBLA DE HÍJAR (LA)",
+      "provincia": "TERUEL",
+      "lat": 41.2244,
+      "lon": -0.438595,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "71300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R2S"
+          ]
+        }
+      ]
+    },
+    "71300": {
+      "codigo": "71300",
+      "nombre": "MÓRA LA NOVA",
+      "poblacion": "MÓRA LA NOVA",
+      "provincia": "TARRAGONA",
+      "lat": 41.1065823,
+      "lon": 0.65321819,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "71400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R2S"
+          ]
+        }
+      ]
+    },
+    "71400": {
+      "codigo": "71400",
+      "nombre": "REUS",
+      "poblacion": "REUS",
+      "provincia": "TARRAGONA",
+      "lat": 41.1605229,
+      "lon": 1.10008978,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R16"
+          ]
+        },
+        {
+          "destino": "71300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "71500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R16",
+            "R2S",
+            "RT1"
+          ]
+        },
+        {
+          "destino": "73100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R14",
+            "RT1"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R2S",
+            "RT1"
+          ]
+        }
+      ]
+    },
+    "71500": {
+      "codigo": "71500",
+      "nombre": "TARRAGONA",
+      "poblacion": "TARRAGONA",
+      "provincia": "TARRAGONA",
+      "lat": 41.1115636,
+      "lon": 1.25322776,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R17",
+            "RT2"
+          ]
+        },
+        {
+          "destino": "71400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R16",
+            "R2S",
+            "RT1"
+          ]
+        },
+        {
+          "destino": "71600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2S",
+            "RT1",
+            "RT2"
+          ]
+        }
+      ]
+    },
+    "71600": {
+      "codigo": "71600",
+      "nombre": "SANT VICENÇ DE CALDERS",
+      "poblacion": "VENDRELL (EL)",
+      "provincia": "TARRAGONA",
+      "lat": 41.1862102,
+      "lon": 1.52480358,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "71700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R16",
+            "R17",
+            "R2",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "71801",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14",
+            "R15",
+            "R16",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "72100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13"
+          ]
+        },
+        {
+          "destino": "72201",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        }
+      ]
+    },
+    "71700": {
+      "codigo": "71700",
+      "nombre": "VILANOVA I LA GELTRÚ",
+      "poblacion": "VILANOVA I LA GELTRÚ",
+      "provincia": "BARCELONA",
+      "lat": 41.2203207,
+      "lon": 1.73077249,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R16",
+            "R17",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "71801",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R16",
+            "R17",
+            "R2",
+            "R2N",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "72400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R2N"
+          ]
+        },
+        {
+          "destino": "79400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R2S"
+          ]
+        }
+      ]
+    },
+    "71801": {
+      "codigo": "71801",
+      "nombre": "BARCELONA-SANTS",
+      "poblacion": "BARCELONA",
+      "provincia": "BARCELONA",
+      "lat": 41.3798632,
+      "lon": 2.14101688,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14",
+            "R15",
+            "R16",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "71700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R15",
+            "R16",
+            "R17",
+            "R2",
+            "R2N",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "72305",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R2N",
+            "R4"
+          ]
+        },
+        {
+          "destino": "78800",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R11",
+            "R13",
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2",
+            "R2N",
+            "R2S",
+            "R4"
+          ]
+        },
+        {
+          "destino": "79004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "R2",
+            "R2N"
+          ]
+        },
+        {
+          "destino": "79400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2N",
+            "R2S"
+          ]
+        }
+      ]
+    },
+    "72100": {
+      "codigo": "72100",
+      "nombre": "RODA DE BARÀ",
+      "poblacion": "RODA DE BARÀ",
+      "provincia": "TARRAGONA",
+      "lat": 41.1839144,
+      "lon": 1.44017086,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13"
+          ]
+        },
+        {
+          "destino": "76001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13"
+          ]
+        }
+      ]
+    },
+    "72201": {
+      "codigo": "72201",
+      "nombre": "EL VENDRELL",
+      "poblacion": "VENDRELL (EL)",
+      "provincia": "TARRAGONA",
+      "lat": 41.2210057,
+      "lon": 1.53790552,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        },
+        {
+          "destino": "72305",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        },
+        {
+          "destino": "72508",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R8"
+          ]
+        }
+      ]
+    },
+    "72305": {
+      "codigo": "72305",
+      "nombre": "L'HOSPITALET DE LLOBREGAT",
+      "poblacion": "HOSPITALET DE LLOBREGAT (L')",
+      "provincia": "BARCELONA",
+      "lat": 41.3642038,
+      "lon": 2.10091749,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71801",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R4"
+          ]
+        },
+        {
+          "destino": "72201",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        }
+      ]
+    },
+    "72400": {
+      "codigo": "72400",
+      "nombre": "EL PRAT AEROPORT",
+      "poblacion": "PRAT DE LLOBREGAT (EL)",
+      "provincia": "BARCELONA",
+      "lat": 41.3041813,
+      "lon": 2.07340133,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R2N"
+          ]
+        }
+      ]
+    },
+    "72508": {
+      "codigo": "72508",
+      "nombre": "SANTA PERPÈTUA DE MOGODA-RIERA DE CALDES",
+      "poblacion": "SANTA PERPÈTUA DE MOGODA",
+      "provincia": "BARCELONA",
+      "lat": 41.5262297,
+      "lon": 2.18633867,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "72201",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R8"
+          ]
+        },
+        {
+          "destino": "77002",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R3",
+            "R8"
+          ]
+        },
+        {
+          "destino": "79004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R8"
+          ]
+        }
+      ]
+    },
+    "73001": {
+      "codigo": "73001",
+      "nombre": "PUIGVERD DE LLEIDA-ARTESA",
+      "poblacion": "PUIGVERD DE LLEIDA",
+      "provincia": "LLEIDA",
+      "lat": 41.5537015,
+      "lon": 0.73342706,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "73100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14"
+          ]
+        },
+        {
+          "destino": "78400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14"
+          ]
+        }
+      ]
+    },
+    "73100": {
+      "codigo": "73100",
+      "nombre": "LA PLANA-PICAMOIXONS",
+      "poblacion": "VALLS",
+      "provincia": "TARRAGONA",
+      "lat": 41.3061987,
+      "lon": 1.19488293,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R14",
+            "RT1"
+          ]
+        },
+        {
+          "destino": "73001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14"
+          ]
+        },
+        {
+          "destino": "76001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13"
+          ]
+        }
+      ]
+    },
+    "74200": {
+      "codigo": "74200",
+      "nombre": "HUESCA",
+      "poblacion": "HUESCA",
+      "provincia": "HUESCA",
+      "lat": 42.133594,
+      "lon": -0.409745,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "76001": {
+      "codigo": "76001",
+      "nombre": "SALOMÓ",
+      "poblacion": "SALOMÓ",
+      "provincia": "TARRAGONA",
+      "lat": 41.2234416,
+      "lon": 1.37662504,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "72100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13"
+          ]
+        },
+        {
+          "destino": "73100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13"
+          ]
+        }
+      ]
+    },
+    "77002": {
+      "codigo": "77002",
+      "nombre": "MONTCADA-RIPOLLET",
+      "poblacion": "MONTCADA I REIXAC",
+      "provincia": "BARCELONA",
+      "lat": 41.4968022,
+      "lon": 2.18192841,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "72508",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R3",
+            "R8"
+          ]
+        },
+        {
+          "destino": "77100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "78800",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        }
+      ]
+    },
+    "77100": {
+      "codigo": "77100",
+      "nombre": "LES FRANQUESES DEL VALLÈS",
+      "poblacion": "FRANQUESES DEL VALLÈS (LES)",
+      "provincia": "BARCELONA",
+      "lat": 41.6297885,
+      "lon": 2.29516461,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "77002",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "77200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "78800",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        }
+      ]
+    },
+    "77200": {
+      "codigo": "77200",
+      "nombre": "RIPOLL",
+      "poblacion": "RIPOLL",
+      "provincia": "GIRONA",
+      "lat": 42.1961284,
+      "lon": 2.19584128,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "77100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "77301",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        }
+      ]
+    },
+    "77301": {
+      "codigo": "77301",
+      "nombre": "CAMPDEVÀNOL",
+      "poblacion": "CAMPDEVÀNOL",
+      "provincia": "GIRONA",
+      "lat": 42.2217131,
+      "lon": 2.16575839,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "77200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "97001",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R3"
+          ]
+        }
+      ]
+    },
+    "78300": {
+      "codigo": "78300",
+      "nombre": "SELGUA",
+      "poblacion": "MONZÓN",
+      "provincia": "HUESCA",
+      "lat": 41.906333,
+      "lon": 0.148187,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "98103",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "78400": {
+      "codigo": "78400",
+      "nombre": "LLEIDA-PIRINEUS",
+      "poblacion": "LLEIDA",
+      "provincia": "LLEIDA",
+      "lat": 41.62013,
+      "lon": 0.63365328,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "73001",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14"
+          ]
+        },
+        {
+          "destino": "78500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "RL3",
+            "RL4"
+          ]
+        }
+      ]
+    },
+    "78500": {
+      "codigo": "78500",
+      "nombre": "CERVERA",
+      "poblacion": "CERVERA",
+      "provincia": "LLEIDA",
+      "lat": 41.673611,
+      "lon": 1.274773,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "78400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "RL3",
+            "RL4"
+          ]
+        },
+        {
+          "destino": "78600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "RL4"
+          ]
+        }
+      ]
+    },
+    "78600": {
+      "codigo": "78600",
+      "nombre": "MANRESA",
+      "poblacion": "MANRESA",
+      "provincia": "BARCELONA",
+      "lat": 41.7203921,
+      "lon": 1.82648564,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "78500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        },
+        {
+          "destino": "78700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4",
+            "RL4"
+          ]
+        }
+      ]
+    },
+    "78700": {
+      "codigo": "78700",
+      "nombre": "TERRASSA ESTACIÓ DEL NORD",
+      "poblacion": "TERRASSA",
+      "provincia": "BARCELONA",
+      "lat": 41.5697825,
+      "lon": 2.01435428,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "78600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        },
+        {
+          "destino": "78800",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        },
+        {
+          "destino": "79004",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 5,
+          "lineas_validas": [
+            "R2",
+            "R2N",
+            "R4"
+          ]
+        }
+      ]
+    },
+    "78800": {
+      "codigo": "78800",
+      "nombre": "MONTCADA-BIFURCACIÓ",
+      "poblacion": "MONTCADA I REIXAC",
+      "provincia": "BARCELONA",
+      "lat": 41.4698402,
+      "lon": 2.18001578,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71801",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R11",
+            "R13",
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2",
+            "R2N",
+            "R2S",
+            "R4"
+          ]
+        },
+        {
+          "destino": "77002",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "77100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "78700",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R4"
+          ]
+        },
+        {
+          "destino": "79004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1"
+          ]
+        },
+        {
+          "destino": "79400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R2S"
+          ]
+        },
+        {
+          "destino": "97001",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 5,
+          "lineas_validas": [
+            "R1",
+            "R2N",
+            "R4"
+          ]
+        }
+      ]
+    },
+    "79004": {
+      "codigo": "79004",
+      "nombre": "BARCELONA-SANT ANDREU",
+      "poblacion": "BARCELONA",
+      "provincia": "BARCELONA",
+      "lat": 41.4361251,
+      "lon": 2.19319866,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71801",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "R2",
+            "R2N"
+          ]
+        },
+        {
+          "destino": "72508",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R8"
+          ]
+        },
+        {
+          "destino": "78700",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 5,
+          "lineas_validas": [
+            "R2",
+            "R2N",
+            "R4"
+          ]
+        },
+        {
+          "destino": "78800",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R2N"
+          ]
+        },
+        {
+          "destino": "79100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "R2",
+            "R2N",
+            "R8"
+          ]
+        },
+        {
+          "destino": "79400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1"
+          ]
+        }
+      ]
+    },
+    "79100": {
+      "codigo": "79100",
+      "nombre": "GRANOLLERS-CENTRE",
+      "poblacion": "GRANOLLERS",
+      "provincia": "BARCELONA",
+      "lat": 41.5997447,
+      "lon": 2.29126962,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "79004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "R2",
+            "R2N",
+            "R8"
+          ]
+        },
+        {
+          "destino": "79200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "R2",
+            "R2N"
+          ]
+        }
+      ]
+    },
+    "79200": {
+      "codigo": "79200",
+      "nombre": "MAÇANET-MASSANES",
+      "poblacion": "MASSANES",
+      "provincia": "GIRONA",
+      "lat": 41.7724212,
+      "lon": 2.67385865,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "79100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "R2",
+            "R2N"
+          ]
+        },
+        {
+          "destino": "79300",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "RG1"
+          ]
+        },
+        {
+          "destino": "79600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R11"
+          ]
+        },
+        {
+          "destino": "97001",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R11",
+            "R2N",
+            "RG1"
+          ]
+        }
+      ]
+    },
+    "79300": {
+      "codigo": "79300",
+      "nombre": "GIRONA",
+      "poblacion": "GIRONA",
+      "provincia": "GIRONA",
+      "lat": 41.9793629,
+      "lon": 2.81693689,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "79200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R11",
+            "R2N"
+          ]
+        }
+      ]
+    },
+    "79400": {
+      "codigo": "79400",
+      "nombre": "BARCELONA ESTACIÓ DE FRANÇA",
+      "poblacion": "BARCELONA",
+      "provincia": "BARCELONA",
+      "lat": 41.3844866,
+      "lon": 2.18534785,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "71801",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R13",
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2N",
+            "R2S"
+          ]
+        },
+        {
+          "destino": "79004",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R2N"
+          ]
+        },
+        {
+          "destino": "79500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1"
+          ]
+        }
+      ]
+    },
+    "79500": {
+      "codigo": "79500",
+      "nombre": "MATARÓ",
+      "poblacion": "MATARÓ",
+      "provincia": "BARCELONA",
+      "lat": 41.5333852,
+      "lon": 2.44553025,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "79400",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R2N"
+          ]
+        },
+        {
+          "destino": "79600",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1"
+          ]
+        }
+      ]
+    },
+    "79600": {
+      "codigo": "79600",
+      "nombre": "ARENYS DE MAR",
+      "poblacion": "ARENYS DE MAR",
+      "provincia": "BARCELONA",
+      "lat": 41.577699,
+      "lon": 2.54933744,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "79200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1"
+          ]
+        },
+        {
+          "destino": "79500",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "R1",
+            "R2N"
+          ]
+        }
+      ]
+    },
+    "82100": {
+      "codigo": "82100",
+      "nombre": "SORIA",
+      "poblacion": "SORIA",
+      "provincia": "SORIA",
+      "lat": 41.754754,
+      "lon": -2.476537,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "8223": {
+      "codigo": "8223",
+      "nombre": "VIGO URZAIZ",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "22300",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "8240": {
+      "codigo": "8240",
+      "nombre": "MEDINA DEL CAMPO AV",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "10500",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "8251": {
+      "codigo": "8251",
+      "nombre": "A GUDIÑA-PORTA DE GALICIA",
+      "poblacion": "",
+      "provincia": "",
+      "lat": null,
+      "lon": null,
+      "cercanias": false,
+      "fuente_nombre": "excel_o_codigo",
+      "conexiones": [
+        {
+          "destino": "31200",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 7,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "95100": {
+      "codigo": "95100",
+      "nombre": "MUSEO-FERROCAR.",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4003471,
+      "lon": -3.6928278,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C10",
+            "C7"
+          ]
+        }
+      ]
+    },
+    "97001": {
+      "codigo": "97001",
+      "nombre": "LA MOLINA - SKITREN",
+      "poblacion": "ALP",
+      "provincia": "GIRONA",
+      "lat": 42.344684,
+      "lon": 1.955856,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "65400",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 9,
+          "lineas_validas": [
+            "R17",
+            "RT2"
+          ]
+        },
+        {
+          "destino": "77301",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R3"
+          ]
+        },
+        {
+          "destino": "78800",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 5,
+          "lineas_validas": [
+            "R1",
+            "R2N",
+            "R4"
+          ]
+        },
+        {
+          "destino": "79200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R11",
+            "R2N",
+            "RG1"
+          ]
+        }
+      ]
+    },
+    "97100": {
+      "codigo": "97100",
+      "nombre": "PITIS",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4954173,
+      "lon": -3.7261603,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7"
+          ]
+        },
+        {
+          "destino": "10100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C8A",
+            "C8B"
+          ]
+        },
+        {
+          "destino": "97200",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7",
+            "C8A",
+            "C8B"
+          ]
+        }
+      ]
+    },
+    "97200": {
+      "codigo": "97200",
+      "nombre": "MIRASIERRA-PACO DE LUCÍA",
+      "poblacion": "CANENCIA",
+      "provincia": "MADRID",
+      "lat": 40.499759,
+      "lon": -3.7092505,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "17000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7",
+            "C8A",
+            "C8B"
+          ]
+        },
+        {
+          "destino": "97100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C7",
+            "C8A",
+            "C8B"
+          ]
+        }
+      ]
+    },
+    "98000": {
+      "codigo": "98000",
+      "nombre": "MADRID - ATOCHA CERCANÍAS",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.406528,
+      "lon": -3.689373,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "17000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1",
+            "C2"
+          ]
+        },
+        {
+          "destino": "18000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        },
+        {
+          "destino": "60000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": []
+        },
+        {
+          "destino": "70100",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C2"
+          ]
+        },
+        {
+          "destino": "98304",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "99000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "98103": {
+      "codigo": "98103",
+      "nombre": "ALCALÁ DE HENARES",
+      "poblacion": "ALCALÁ DE HENARES",
+      "provincia": "MADRID",
+      "lat": 40.489027,
+      "lon": -3.365765,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "70100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        },
+        {
+          "destino": "78300",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        },
+        {
+          "destino": "99203",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "98304": {
+      "codigo": "98304",
+      "nombre": "VALDEBEBAS",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.4821016,
+      "lon": -3.6162874,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "98000",
+          "tipo": "directo",
+          "tiempo_cambio_min": 0,
+          "lineas_validas": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    "99000": {
+      "codigo": "99000",
+      "nombre": "MADRID CERCANÍAS",
+      "poblacion": "MADRID",
+      "provincia": "MADRID",
+      "lat": 40.406528,
+      "lon": -3.689373,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "18000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C10",
+            "C2",
+            "C3",
+            "C4",
+            "C4A",
+            "C4B",
+            "C5",
+            "C7"
+          ]
+        },
+        {
+          "destino": "60000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": []
+        },
+        {
+          "destino": "98000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "99100": {
+      "codigo": "99100",
+      "nombre": "BARBASTRO-BUS",
+      "poblacion": "BARBASTRO",
+      "provincia": "HUESCA",
+      "lat": 42.0353683,
+      "lon": 0.1207791,
+      "cercanias": false,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C10",
+            "C7"
+          ]
+        },
+        {
+          "destino": "15200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C5A",
+            "C6",
+            "C7"
+          ]
+        },
+        {
+          "destino": "15400",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C1"
+          ]
+        },
+        {
+          "destino": "2002",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "21001",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        },
+        {
+          "destino": "22100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "23000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "30100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "31400",
+          "tipo": "transbordo",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "35200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "5102",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5"
+          ]
+        },
+        {
+          "destino": "5201",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "5770",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        },
+        {
+          "destino": "60100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "65400",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "71400",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R2S",
+            "RT1"
+          ]
+        },
+        {
+          "destino": "71500",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "R14",
+            "R15",
+            "R16",
+            "R17",
+            "R2S",
+            "RT1",
+            "RT2"
+          ]
+        },
+        {
+          "destino": "74200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": []
+        },
+        {
+          "destino": "82100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "99203",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    },
+    "99203": {
+      "codigo": "99203",
+      "nombre": "PINTO",
+      "poblacion": "PINTO",
+      "provincia": "MADRID",
+      "lat": 40.242802,
+      "lon": -3.703665,
+      "cercanias": true,
+      "fuente_nombre": "renfe_csv",
+      "conexiones": [
+        {
+          "destino": "10000",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 4,
+          "lineas_validas": [
+            "C10",
+            "C7"
+          ]
+        },
+        {
+          "destino": "12001",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C8B",
+            "C9"
+          ]
+        },
+        {
+          "destino": "60100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "60200",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C3"
+          ]
+        },
+        {
+          "destino": "70100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 3,
+          "lineas_validas": [
+            "C2",
+            "C7"
+          ]
+        },
+        {
+          "destino": "98103",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        },
+        {
+          "destino": "99100",
+          "tipo": "intercambiador",
+          "tiempo_cambio_min": 2,
+          "lineas_validas": []
+        }
+      ]
+    }
+  }
+}

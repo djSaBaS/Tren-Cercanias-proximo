@@ -1,404 +1,238 @@
+<!-- Declaramos el tipo de documento como HTML5. -->
 <!doctype html>
+<!-- Abrimos el documento HTML e indicamos el idioma principal en español. -->
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cercanías · Próximos trenes</title>
-
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      crossorigin="anonymous"
-    />
-
-    <style>
-      body { background: #f6f7fb; }
-      .wrap { max-width: 980px; }
-      .card { border: 0; box-shadow: 0 10px 30px rgba(16,24,40,.08); border-radius: 16px; }
-      .time-big { font-size: 2rem; font-weight: 800; line-height: 1.1; }
-      .time-small { font-size: .95rem; opacity: .8; }
-      .platform-badge { font-weight: 700; }
-      .gap-y { display: grid; gap: 14px; }
-      .muted { opacity: .75; }
-      .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      }
-    </style>
-  </head>
-
-  <body>
-    <main class="container py-4 wrap">
-      <div class="mb-3">
+<head>
+  <!-- Definimos la codificación UTF-8 para caracteres especiales. -->
+  <meta charset="utf-8">
+  <!-- Configuramos el viewport para una visualización responsive en móviles. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Definimos el título de la aplicación. -->
+  <title>Cercanías · Próximos trenes</title>
+  <!-- Definimos una descripción corta para SEO básico. -->
+  <meta name="description" content="Panel de Cercanías configurable (estilo cartel mecánico) con datos en tiempo real y avisos/incidencias.">
+  <!-- Vinculamos el favicon en formato ICO. -->
+  <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
+  <!-- Vinculamos el favicon en formato SVG para mejor escalado. -->
+  <link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
+  <!-- Vinculamos Bootstrap desde CDN para estilos base y componentes. -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Vinculamos los estilos propios del proyecto. -->
+  <link href="./assets/css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Contenedor principal centrado para mantener una lectura cómoda. -->
+  <main class="container py-4 app-container">
+    <!-- Cabecera superior con título y acciones. -->
+    <header class="d-flex align-items-center justify-content-between gap-3 mb-3">
+      <!-- Bloque izquierdo con título y estado. -->
+      <div>
+        <!-- Título principal visible para el usuario. -->
         <h1 class="h3 mb-1">Cercanías · Próximos trenes</h1>
-        <div class="text-secondary">
-          <span id="clock">--:--:--</span>
+        <!-- Línea de estado con reloj y estado del refresco. -->
+        <div class="text-secondary small">
+          <!-- Reloj local actualizado por JavaScript. -->
+          <span id="uiClock" class="mono">--:--:--</span>
+          <!-- Separador visual. -->
           <span class="mx-2">·</span>
-          <span id="status" class="muted">Preparando…</span>
+          <!-- Estado del último refresco. -->
+          <span id="uiStatus">Preparando…</span>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-body p-4">
-          <div class="mb-3">
-            <h2 class="h4 mb-1" id="stationTitle">Estación: —</h2>
-            <p class="mb-0 text-secondary" id="subtitle">Estos son los próximos trenes.</p>
-          </div>
+      <!-- Bloque derecho con iconos persistentes. -->
+      <div class="d-flex align-items-center gap-2">
+        <!-- Botón de ayuda que abre el manual de usuario. -->
+        <a class="icon-btn" href="./manual/index.html" target="_blank" rel="noopener" aria-label="Abrir manual de usuario">
+          <!-- Icono de interrogación. -->
+          <span class="icon">?</span>
+        </a>
+        <!-- Botón de configuración (rueda dentada) para abrir el panel. -->
+        <button id="btnOpenConfig" type="button" class="icon-btn" aria-label="Abrir configuración">
+          <!-- Icono simple de engranaje en texto para máxima compatibilidad. -->
+          <span class="icon">⚙</span>
+        </button>
+      </div>
+    </header>
 
-          <div id="alertBox" class="alert alert-warning d-none" role="alert">
-            <span id="alertText">—</span>
-          </div>
+    <!-- Tarjeta principal del “panel” de trenes. -->
+    <section class="card shadow-sm border-0 panel-card">
+      <!-- Cuerpo de la tarjeta. -->
+      <div class="card-body p-4">
+        <!-- Título de estación seleccionado. -->
+        <h2 class="h5 mb-1" id="uiStationTitle">Estación: —</h2>
+        <!-- Texto contextual sobre lo que se muestra. -->
+        <p class="text-secondary mb-3" id="uiSubtitle">Estos son los próximos trenes.</p>
 
-          <div id="trainList" class="gap-y"></div>
+        <!-- Alerta de errores o avisos, oculta por defecto. -->
+        <div id="uiAlert" class="alert alert-warning d-none" role="alert">
+          <!-- Texto de la alerta. -->
+          <span id="uiAlertText">—</span>
+        </div>
 
-          <div class="mt-3 text-secondary small">
-            <span>Se actualiza automáticamente (sin botones).</span>
-            <span class="mx-2">·</span>
-            <span id="refreshInfo">Refresco: —</span>
-          </div>
+        <!-- Aviso global de incidencias relevantes (se muestra solo si aplica). -->
+        <div id="uiIncidenciasBanner" class="inc-banner d-none" role="status" aria-live="polite">
+          <!-- Icono de aviso. -->
+          <span class="inc-banner-icon" aria-hidden="true">⚠️</span>
+          <!-- Texto del banner. -->
+          <span id="uiIncidenciasBannerText" class="inc-banner-text">—</span>
+          <!-- Botón de ver detalles. -->
+          <button id="btnIncidenciasDetails" type="button" class="btn btn-sm btn-outline-light ms-auto">Ver</button>
+        </div>
+
+        <!-- Lista donde se renderizan los próximos trenes. -->
+        <div id="uiTrains" class="trains-grid" aria-live="polite"></div>
+
+        <!-- Pie informativo del refresco. -->
+        <div class="mt-3 text-secondary small">
+          <!-- Texto fijo de comportamiento sin botones. -->
+          <span>Se actualiza automáticamente (sin botones).</span>
+          <!-- Separador visual. -->
+          <span class="mx-2">·</span>
+          <!-- Intervalo de refresco. -->
+          <span id="uiRefreshInfo">Refresco: —</span>
         </div>
       </div>
-    </main>
+    </section>
 
-    <script>
-      /* URL base de tu Cloudflare Worker (proxy CORS). */
-      const PROXY_BASE_URL = "https://bitter-meadow-5628.juanantoniosanchezplaza.workers.dev";
+    <!-- Pie de página con créditos y enlaces. -->
+    <footer class="mt-4 text-secondary small d-flex flex-wrap gap-2 align-items-center justify-content-between">
+      <!-- Texto de autoría. -->
+      <div>
+        <!-- Indicamos autor de la aplicación. -->
+        Creado por <strong>Juan Antonio Sánchez Plaza</strong>
+      </div>
+      <!-- Enlaces a redes/portfolio solicitados. -->
+      <div class="d-flex flex-wrap gap-3">
+        <!-- Enlace a LinkedIn. -->
+        <a href="https://www.linkedin.com/in/juanantoniosanchezplaza/" target="_blank" rel="noopener">LinkedIn</a>
+        <!-- Enlace a GitHub. -->
+        <a href="https://github.com/djSaBaS/" target="_blank" rel="noopener">GitHub</a>
+        <!-- Enlace a Porfolio. -->
+        <a href="https://djsabas.github.io/Porfolio/" target="_blank" rel="noopener">Porfolio</a>
+      </div>
+    </footer>
+  </main>
 
-      /* Endpoints GTFS-RT. */
-      const TRIP_UPDATES_URL = "https://gtfsrt.renfe.com/trip_updates.json";
-      const VEHICLE_POSITIONS_URL = "https://gtfsrt.renfe.com/vehicle_positions.json";
+  <!-- Modal simple para detalles de incidencia. -->
+  <div id="modalOverlay" class="modalx d-none" aria-hidden="true">
+    <div class="modalx-backdrop" id="modalBackdrop"></div>
+    <div class="modalx-dialog" role="dialog" aria-modal="true" aria-label="Detalles de incidencia">
+      <div class="modalx-header">
+        <h3 class="h6 mb-0">Detalles de incidencia</h3>
+        <button id="btnCloseModal" type="button" class="btn btn-sm btn-outline-secondary">Cerrar</button>
+      </div>
+      <div class="modalx-body">
+        <div id="modalBody" class="modalx-content">—</div>
+      </div>
+    </div>
+  </div>
 
-      /* Intervalos. */
-      const REFRESH_MS = 60_000;
-      const CLOCK_MS = 500;
+  <!-- Modal simple para QR de configuración (opcional). -->
+  <div id="qrOverlay" class="modalx d-none" aria-hidden="true">
+    <div class="modalx-backdrop" id="qrBackdrop"></div>
+    <div class="modalx-dialog" role="dialog" aria-modal="true" aria-label="Compartir configuración por QR">
+      <div class="modalx-header">
+        <h3 class="h6 mb-0">Configuración por QR</h3>
+        <button id="btnCloseQr" type="button" class="btn btn-sm btn-outline-secondary">Cerrar</button>
+      </div>
+      <div class="modalx-body">
+        <p class="text-secondary small mb-2">Este QR codifica tu configuración actual. Sirve para copiarla fácilmente a otro dispositivo.</p>
+        <div class="qr-row">
+          <div class="qr-box">
+            <canvas id="qrCanvas" width="240" height="240" aria-label="Código QR de configuración"></canvas>
+          </div>
+          <div class="qr-actions">
+            <label for="qrImportFile" class="form-label">Importar desde una imagen</label>
+            <input id="qrImportFile" class="form-control" type="file" accept="image/*">
+            <div class="form-text">Puedes hacer una captura del QR, guardarla y cargarla aquí.</div>
+            <button id="btnQrImport" type="button" class="btn btn-outline-primary mt-2 w-100">Importar</button>
+            <button id="btnQrCopy" type="button" class="btn btn-outline-secondary mt-2 w-100">Copiar JSON</button>
+          </div>
+        </div>
+        <pre id="qrDebug" class="debug-box mt-3">—</pre>
+      </div>
+    </div>
+  </div>
 
-      /* Timeouts. */
-      const TIMEOUT_TRIP_UPDATES_MS = 25_000;
-      const TIMEOUT_VEHICLES_MS = 25_000;
+  <!-- Drawer de configuración (sin backend, todo en localStorage). -->
+  <div id="configDrawer" class="config-drawer" aria-hidden="true">
+    <div id="configBackdrop" class="config-backdrop" tabindex="-1" aria-label="Cerrar configuración"></div>
+    <aside class="config-panel" role="dialog" aria-modal="true" aria-label="Configuración">
+      <div class="config-header">
+        <h3 class="h6 mb-0">Configuración</h3>
+        <div class="d-flex gap-2">
+          <button id="btnOpenQr" type="button" class="btn btn-sm btn-outline-primary">QR</button>
+          <button id="btnCloseConfig" type="button" class="btn btn-sm btn-outline-secondary">Cerrar</button>
+        </div>
+      </div>
 
-      /* Nombres. */
-      const STATION_NAME_ATOCHA = "Madrid-Puerta de Atocha";
-      const STATION_NAME_CHAMARTIN = "Madrid-Chamartín";
+      <div class="config-body">
+        <div class="mb-3">
+          <label for="cfgProvincia" class="form-label">Provincia</label>
+          <select id="cfgProvincia" class="form-select"></select>
+        </div>
 
-      /* Prefijos de stopId (según lo que ya has visto en tu debug). */
-      const ATOCHA_PREFIXES = ["180", "181"];
-      const CHAMARTIN_PREFIXES = ["170"];
+        <div class="mb-3">
+          <label for="cfgPoblacion" class="form-label">Localidad</label>
+          <select id="cfgPoblacion" class="form-select"></select>
+        </div>
 
-      /* Líneas permitidas por modo (basado en el mapa y tu captura de ADIF). */
-      const LINES_TO_CHAMARTIN_FROM_ATOCHA = new Set(["C1", "C2", "C3", "C4A", "C4B", "C7", "C8A", "C8B", "C10"]);
-      const LINES_TO_ATOCHA_FROM_CHAMARTIN = new Set(["C2", "C3", "C4A", "C4B", "C7"]);
+        <div class="mb-3">
+          <label for="cfgOrigen" class="form-label">Estación origen</label>
+          <select id="cfgOrigen" class="form-select"></select>
+        </div>
 
-      /* DOM. */
-      const clockEl = document.getElementById("clock");
-      const statusEl = document.getElementById("status");
-      const stationTitleEl = document.getElementById("stationTitle");
-      const subtitleEl = document.getElementById("subtitle");
-      const trainListEl = document.getElementById("trainList");
-      const alertBoxEl = document.getElementById("alertBox");
-      const alertTextEl = document.getElementById("alertText");
-      const refreshInfoEl = document.getElementById("refreshInfo");
+        <div class="mb-3">
+          <label for="cfgDestino" class="form-label">Estación destino</label>
+          <select id="cfgDestino" class="form-select"></select>
+        </div>
 
-      /* Estado. */
-      let isUpdating = false;
+        <div class="mb-3">
+          <label for="cfgStyle" class="form-label">Estilo del panel</label>
+          <select id="cfgStyle" class="form-select">
+            <option value="normal">Normal</option>
+            <option value="splitflap">Cartel mecánico (split-flap)</option>
+          </select>
+          <div class="form-text">Si tu dispositivo tiene “reducir movimiento”, se suavizan animaciones.</div>
+        </div>
 
-      /* UI helpers. */
-      refreshInfoEl.textContent = `Refresco: ${Math.round(REFRESH_MS / 1000)}s`;
+        <div class="mb-3">
+          <label for="cfgRefresh" class="form-label">Refresco</label>
+          <select id="cfgRefresh" class="form-select">
+            <option value="30">30s</option>
+            <option value="60" selected>60s</option>
+            <option value="90">90s</option>
+          </select>
+        </div>
 
-      function setAlert(message) {
-        if (!message) {
-          alertBoxEl.classList.add("d-none");
-          alertTextEl.textContent = "";
-          return;
-        }
-        alertTextEl.textContent = message;
-        alertBoxEl.classList.remove("d-none");
-      }
+        <div class="mb-3">
+          <label for="cfgWorkerUrl" class="form-label">Cloudflare Worker (proxy)</label>
+          <input id="cfgWorkerUrl" class="form-control" type="url" placeholder="https://tu-worker.workers.dev">
+          <div class="form-text">Necesario para evitar CORS en GitHub Pages.</div>
+        </div>
 
-      function escapeHtml(text) {
-        const raw = String(text ?? "");
-        return raw
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" role="switch" id="cfgDebug">
+          <label class="form-check-label" for="cfgDebug">Mostrar debug</label>
+        </div>
 
-      function pad2(value) {
-        return String(value).padStart(2, "0");
-      }
+        <div class="d-grid gap-2">
+          <button id="btnSaveConfig" type="button" class="btn btn-primary">Guardar</button>
+          <button id="btnResetConfig" type="button" class="btn btn-outline-danger">Restablecer</button>
+        </div>
 
-      function tickClock() {
-        const now = new Date();
-        clockEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
-      }
+        <hr class="my-4">
 
-      function epochNowSeconds() {
-        return Math.floor(Date.now() / 1000);
-      }
+        <div id="uiDebugWrap" class="d-none">
+          <h4 class="h6">Debug</h4>
+          <pre id="uiDebug" class="debug-box">—</pre>
+        </div>
+      </div>
+    </aside>
+  </div>
 
-      function toLocalTimeStrFromEpoch(epochSeconds) {
-        if (!epochSeconds || Number.isNaN(Number(epochSeconds))) {
-          return "";
-        }
-        const d = new Date(Number(epochSeconds) * 1000);
-        return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-      }
-
-      function matchesByPrefix(stopId, prefixes) {
-        const id = String(stopId || "");
-        for (const p of prefixes) {
-          if (id.startsWith(p)) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      function normalizeLineCode(line) {
-        const raw = String(line || "").toUpperCase().trim();
-        if (!raw) {
-          return "";
-        }
-        return raw.replace(/\s+/g, "");
-      }
-
-      function parseLineFromTripId(tripId) {
-        const raw = String(tripId || "");
-        const m = raw.match(/(C\d{1,2}[AB]?)/i);
-        return m ? normalizeLineCode(m[1]) : "";
-      }
-
-      function extractPlatformFromLabel(label) {
-        const raw = String(label || "");
-        const match = raw.match(/PLATF\.\((\d+)\)/i);
-        return match ? match[1] : "";
-      }
-
-      function extractLineFromLabel(label) {
-        const raw = String(label || "");
-        const match = raw.match(/^([A-Z]\d+[A-Z]?)-/i);
-        return match ? normalizeLineCode(match[1]) : "";
-      }
-
-      async function fetchJsonViaWorker(targetUrl, timeoutMs) {
-        const proxyUrl = `${PROXY_BASE_URL}/?target=${encodeURIComponent(targetUrl)}`;
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-        try {
-          const res = await fetch(proxyUrl, { cache: "no-store", signal: controller.signal });
-          if (!res.ok) {
-            throw new Error(`Proxy HTTP ${res.status}`);
-          }
-          return await res.json();
-        } finally {
-          clearTimeout(timeoutId);
-        }
-      }
-
-      function buildVehicleMapByTripId(vehiclePositionsJson) {
-        const map = new Map();
-        const entities = Array.isArray(vehiclePositionsJson?.entity) ? vehiclePositionsJson.entity : [];
-
-        for (const ent of entities) {
-          const v = ent?.vehicle;
-          const tripId = v?.trip?.trip_id || v?.trip?.tripId || "";
-          if (!tripId) {
-            continue;
-          }
-          const label = v?.vehicle?.label || "";
-          map.set(tripId, {
-            platform: extractPlatformFromLabel(label),
-            line: extractLineFromLabel(label),
-          });
-        }
-        return map;
-      }
-
-      function normalizeTripUpdateEntity(ent) {
-        const tu = ent?.tripUpdate || ent?.trip_update || null;
-        if (!tu) {
-          return null;
-        }
-        const tripId = tu?.trip?.tripId || tu?.trip?.trip_id || "";
-        const stopTimeUpdates = tu?.stopTimeUpdate || tu?.stop_time_update || [];
-        return {
-          tripId,
-          stopTimeUpdates: Array.isArray(stopTimeUpdates) ? stopTimeUpdates : [],
-        };
-      }
-
-      function normalizeStopTimeUpdate(stu) {
-        const stopId = String(stu?.stopId || stu?.stop_id || "");
-        const arrivalTime = stu?.arrival?.time ? Number(stu.arrival.time) : null;
-        const departureTime = stu?.departure?.time ? Number(stu.departure.time) : null;
-        return { stopId, arrivalTime, departureTime };
-      }
-
-      function isFutureTime(stu) {
-        const now = epochNowSeconds();
-        const t = stu.departureTime || stu.arrivalTime || 0;
-        return t > now;
-      }
-
-      function getModeByTime(now) {
-        const h = now.getHours();
-        const m = now.getMinutes();
-
-        if (h < 12 || (h === 12 && m === 0)) {
-          return {
-            stationTitle: STATION_NAME_ATOCHA,
-            stationPrefixes: ATOCHA_PREFIXES,
-            directionText: "Atocha → Chamartín",
-            allowedLines: LINES_TO_CHAMARTIN_FROM_ATOCHA,
-          };
-        }
-
-        return {
-          stationTitle: STATION_NAME_CHAMARTIN,
-          stationPrefixes: CHAMARTIN_PREFIXES,
-          directionText: "Chamartín → Atocha",
-          allowedLines: LINES_TO_ATOCHA_FROM_CHAMARTIN,
-        };
-      }
-
-      function renderTrains(trains) {
-        if (!trains.length) {
-          trainListEl.innerHTML = `
-            <div class="alert alert-info mb-0" role="alert">
-              No hay trenes próximos encontrados.
-            </div>
-          `;
-          return;
-        }
-
-        trainListEl.innerHTML = trains
-          .map((t, idx) => {
-            const platform = t.platform ? escapeHtml(t.platform) : "—";
-            const line = t.line ? escapeHtml(t.line) : "—";
-
-            return `
-              <div class="border rounded-4 p-3 bg-white">
-                <div class="d-flex align-items-start justify-content-between gap-3">
-                  <div>
-                    <div class="small text-secondary mb-1">
-                      Tren ${idx + 1} <span class="mono text-secondary">${escapeHtml(t.tripId || "")}</span>
-                    </div>
-                    <div class="time-big">${escapeHtml(t.arrival || "—")}</div>
-                    <div class="time-small text-secondary">
-                      Salida prevista: <strong>${escapeHtml(t.departure || "—")}</strong>
-                    </div>
-                  </div>
-                  <div class="text-end">
-                    <div class="badge text-bg-dark platform-badge mb-2">Andén/Vía: ${platform}</div>
-                    <div class="text-secondary small">Línea: <strong>${line}</strong></div>
-                  </div>
-                </div>
-              </div>
-            `;
-          })
-          .join("");
-      }
-
-      async function update() {
-        if (isUpdating) {
-          return;
-        }
-
-        isUpdating = true;
-        setAlert("");
-        statusEl.textContent = "Actualizando…";
-
-        try {
-          const now = new Date();
-          const mode = getModeByTime(now);
-
-          stationTitleEl.textContent = `Estación: ${mode.stationTitle}`;
-          subtitleEl.textContent = `Estos son los próximos trenes (${mode.directionText}).`;
-
-          statusEl.textContent = "Descargando trip_updates…";
-          const tripUpdatesJson = await fetchJsonViaWorker(TRIP_UPDATES_URL, TIMEOUT_TRIP_UPDATES_MS);
-
-          statusEl.textContent = "Descargando vehicle_positions…";
-          const vehiclesJson = await fetchJsonViaWorker(VEHICLE_POSITIONS_URL, TIMEOUT_VEHICLES_MS);
-
-          const vehicleMap = buildVehicleMapByTripId(vehiclesJson);
-
-          const entities = Array.isArray(tripUpdatesJson?.entity) ? tripUpdatesJson.entity : [];
-          const candidatesAll = [];
-
-          for (const ent of entities) {
-            const tu = normalizeTripUpdateEntity(ent);
-            if (!tu || !tu.tripId || !tu.stopTimeUpdates.length) {
-              continue;
-            }
-
-            for (const raw of tu.stopTimeUpdates) {
-              const u = normalizeStopTimeUpdate(raw);
-
-              if (!u.stopId) {
-                continue;
-              }
-
-              if (!matchesByPrefix(u.stopId, mode.stationPrefixes)) {
-                continue;
-              }
-
-              if (!isFutureTime(u)) {
-                continue;
-              }
-
-              const sortEpoch = u.departureTime || u.arrivalTime || 0;
-              const v = vehicleMap.get(tu.tripId) || { platform: "", line: "" };
-
-              const lineFromVehicle = normalizeLineCode(v.line);
-              const lineFromTripId = parseLineFromTripId(tu.tripId);
-              const finalLine = lineFromVehicle || lineFromTripId;
-
-              candidatesAll.push({
-                tripId: tu.tripId,
-                sortEpoch,
-                arrival: toLocalTimeStrFromEpoch(u.arrivalTime || u.departureTime),
-                departure: toLocalTimeStrFromEpoch(u.departureTime || u.arrivalTime),
-                platform: v.platform || "",
-                line: finalLine || "",
-              });
-
-              break;
-            }
-          }
-
-          candidatesAll.sort((a, b) => a.sortEpoch - b.sortEpoch);
-
-          const candidatesFiltered = candidatesAll.filter((t) => {
-            if (!t.line) {
-              return false;
-            }
-            return mode.allowedLines.has(t.line);
-          });
-
-          let top2 = candidatesFiltered.slice(0, 2);
-
-          if (top2.length < 2) {
-            top2 = candidatesAll.slice(0, 2);
-            setAlert("Aviso: no se encontraron 2 trenes con filtro de dirección; se muestran los 2 próximos sin filtrar.");
-          }
-
-          renderTrains(top2);
-          statusEl.textContent = "Actualizado.";
-        } catch (err) {
-          statusEl.textContent = "Error al actualizar.";
-          setAlert(`Fallo: ${String(err?.message || err)}`);
-          renderTrains([]);
-        } finally {
-          isUpdating = false;
-        }
-      }
-
-      tickClock();
-      setInterval(tickClock, CLOCK_MS);
-      update();
-      setInterval(update, REFRESH_MS);
-    </script>
-  </body>
+  <!-- Cargamos el código JavaScript principal del proyecto. -->
+  <script src="./assets/js/app.js" type="module"></script>
+</body>
 </html>
