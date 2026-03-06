@@ -38,6 +38,11 @@ body{
   font-weight:800;
 }
 .status{margin:0;color:var(--muted);}
+/* Agrupamos acciones rápidas de la cabecera para mantener separación visual. */
+.topbar-actions{
+  display:flex;
+  gap:8px;
+}
 .icon-btn{
   width:40px;
   height:40px;
@@ -49,6 +54,18 @@ body{
   box-shadow:var(--shadow);
   color:var(--text);
   cursor:pointer;
+  text-decoration:none;
+  font-weight:700;
+  font-size:20px;
+}
+/* Reforzamos el foco visible de controles interactivos para accesibilidad por teclado. */
+.icon-btn:focus-visible,
+.link-btn:focus-visible,
+.primary-btn:focus-visible,
+.secondary-btn:focus-visible,
+.inc-btn:focus-visible{
+  outline:3px solid #8da2ff;
+  outline-offset:2px;
 }
 .card{
   background:var(--card);
