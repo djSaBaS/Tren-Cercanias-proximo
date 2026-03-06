@@ -11,6 +11,12 @@
   <title>Cercanías · Próximos trenes</title>
   <!-- Añadimos una descripción corta de la página. -->
   <meta name="description" content="Panel configurable de próximos trenes Cercanías con horarios, QR y efecto cartel mecánico." />
+  <!-- Definimos una política CSP para reducir superficies de inyección de scripts. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; connect-src 'self' https://bitter-meadow-5628.juanantoniosanchezplaza.workers.dev https://gtfsrt.renfe.com; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" />
+  <!-- Limitamos el envío de información de referencia al navegar a dominios externos. -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <!-- Restringimos APIs sensibles del navegador no usadas por esta aplicación. -->
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), camera=(), microphone=()" />
   <!-- Referenciamos el favicon del proyecto si existe en el repositorio. -->
   <link rel="icon" href="./assets/img/favicon.png" />
   <!-- Cargamos la hoja de estilos principal del proyecto. -->
@@ -30,6 +36,8 @@
       </div>
       <!-- Agrupamos los botones de acción superiores. -->
       <div class="topbar-actions">
+        <!-- Definimos un enlace rápido al manual de usuario. -->
+        <a class="icon-btn" href="./manual/index.html" target="_blank" rel="noopener" aria-label="Abrir manual de usuario" title="Manual de usuario">?</a>
         <!-- Definimos el botón para abrir la configuración. -->
         <button id="openConfigBtn" class="icon-btn" type="button" aria-label="Abrir configuración" title="Configuración">⚙</button>
       </div>
