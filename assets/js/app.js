@@ -318,9 +318,9 @@ function syncConfigUi() {
   debugCheck.checked = Boolean(config.debug);
 }
 
-// Extraemos los prefijos candidatos de una estación para soportar 1700X / 1800X.
+// Extraemos prefijos priorizando el código completo para evitar mezclar estaciones de otros núcleos.
 function buildStopPrefixes(stationCode) {
-  const code = String(stationCode || "");
+  const code = normalizeStopId(stationCode);
   const prefixes = [];
   if (code.length >= 5) prefixes.push(code.slice(0, 5));
   if (code.length >= 4) prefixes.push(code.slice(0, 4));
@@ -435,14 +435,9 @@ function alertIcon(type) {
   return "⚠️";
 }
 
-// Filtramos incidencias relevantes por línea o prefijo de parada.
-function getRelevantAlerts(alerts, line, prefixes) {
-  const normalizedLine = String(line || "").toUpperCase();
-  return alerts.filter((alert) => {
-    const byRoute = normalizedLine ? alert.routeIds.some((item) => String(item).toUpperCase().includes(normalizedLine)) : false;
-    const byStop = alert.stopIds.some((stopId) => matchesStopId(stopId, prefixes));
-    return byRoute || byStop;
-  });
+// Filtramos incidencias relevantes solo por parada para evitar alertas de otros núcleos con líneas homónimas.
+function getRelevantAlerts(alerts, prefixes) {
+  return alerts.filter((alert) => alert.stopIds.some((stopId) => matchesStopId(stopId, prefixes)));
 }
 
 // Extraemos candidatos por prefijos del stopId.
@@ -487,7 +482,7 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, rol
   return candidates;
 }
 
-// Aplicamos el efecto de cartel mecánico al texto de un nodo.
+// Aplicamos el efecto de cartel mecánico con giro en dos mitades para simular paneles clásicos.
 function applySplitFlapEffect(targetNode) {
   if (!targetNode) return;
   if (targetNode.dataset.flapDone === "1") return;
@@ -497,21 +492,45 @@ function applySplitFlapEffect(targetNode) {
 
   for (const char of originalText) {
     const flap = createNode("span", "flap");
-    const inner = document.createElement("span");
-    inner.textContent = char;
-    flap.appendChild(inner);
+    const flapTop = createNode("span", "flap-top");
+    const flapBottom = createNode("span", "flap-bottom");
+    const flapSplit = createNode("span", "flap-split");
+
+    flapTop.textContent = char;
+    flapBottom.textContent = char;
+
+    flap.appendChild(flapTop);
+    flap.appendChild(flapSplit);
+    flap.appendChild(flapBottom);
     wrapper.appendChild(flap);
-    flap.animate(
+
+    flapTop.animate(
       [
-        { transform: "rotateX(0deg)", opacity: 0.25 },
-        { transform: "rotateX(85deg)", opacity: 0.6 },
+        { transform: "rotateX(0deg)", opacity: 0.35 },
+        { transform: "rotateX(-90deg)", opacity: 0.75 },
+        { transform: "rotateX(-180deg)", opacity: 0.95 },
         { transform: "rotateX(0deg)", opacity: 1 }
       ],
       {
-        duration: 1900 + Math.floor(Math.random() * 450),
-        delay: Math.floor(Math.random() * 220),
+        duration: 1600 + Math.floor(Math.random() * 260),
+        delay: Math.floor(Math.random() * 180),
         iterations: 1,
-        easing: "cubic-bezier(.19,.72,.16,1)"
+        easing: "cubic-bezier(.22,.7,.16,1)"
+      }
+    );
+
+    flapBottom.animate(
+      [
+        { transform: "rotateX(0deg)", opacity: 0.35 },
+        { transform: "rotateX(90deg)", opacity: 0.75 },
+        { transform: "rotateX(180deg)", opacity: 0.95 },
+        { transform: "rotateX(0deg)", opacity: 1 }
+      ],
+      {
+        duration: 1600 + Math.floor(Math.random() * 260),
+        delay: 80 + Math.floor(Math.random() * 180),
+        iterations: 1,
+        easing: "cubic-bezier(.22,.7,.16,1)"
       }
     );
   }
@@ -691,6 +710,38 @@ function readConfigFromUi() {
   });
 }
 
+// Cargamos la librería QR desde varios CDN para mejorar robustez en entornos restringidos.
+async function ensureQrLibrary() {
+  if (window.QRCode?.toCanvas) return;
+  const candidateUrls = [
+    "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js",
+    "https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"
+  ];
+
+  let lastError = null;
+  for (const candidateUrl of candidateUrls) {
+    try {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = candidateUrl;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => {
+          if (script.parentNode) script.parentNode.removeChild(script);
+          reject(new Error(`No se pudo cargar ${candidateUrl}`));
+        };
+        document.head.appendChild(script);
+      });
+
+      if (window.QRCode?.toCanvas) return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw new Error(`No se pudo cargar la librería QR. Revisa conexión/CSP. Detalle: ${String(lastError?.message || lastError || "desconocido")}`);
+}
+
 // Renderizamos el QR de la configuración actual cargando la librería si hace falta.
 async function renderQrForCurrentConfig() {
   const shareUrl = buildShareUrl(readConfigFromUi());
@@ -708,8 +759,17 @@ async function renderQrForCurrentConfig() {
       document.head.appendChild(script);
     });
   }
+  qrUrlText.value = shareUrl;
 
-  await window.QRCode.toCanvas(qrCanvas, shareUrl, { width: 260, margin: 1 });
+  await ensureQrLibrary();
+  await window.QRCode.toCanvas(qrCanvas, shareUrl, {
+    width: 260,
+    margin: 1,
+    color: {
+      dark: "#111827",
+      light: "#ffffff"
+    }
+  });
 }
 
 // Refrescamos el panel de trenes usando la configuración activa.
@@ -773,7 +833,7 @@ async function refreshRealtime() {
   const linesWithAlerts = [];
   for (const train of finalTrains) {
     const prefixes = train.role === "ORIGIN" ? route.originPrefixes : route.destinationPrefixes;
-    train.alerts = getRelevantAlerts(alerts, train.line, prefixes).map((alert) => ({
+    train.alerts = getRelevantAlerts(alerts, prefixes).map((alert) => ({
       ...alert,
       type: classifyAlertType(alert.text)
     }));
@@ -839,7 +899,7 @@ function bindEvents() {
       await renderQrForCurrentConfig();
       openQr();
     } catch (error) {
-      window.alert(`No se pudo generar el QR: ${String(error)}`);
+      window.alert(`No se pudo generar el QR: ${String(error?.message || error || "Error desconocido")}`);
     }
   });
 
