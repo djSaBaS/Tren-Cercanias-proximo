@@ -132,13 +132,45 @@ function defaultConfig() {
   };
 }
 
+// Limitamos los efectos permitidos para evitar configuraciones inválidas o inyectadas.
+const ALLOWED_EFFECTS = new Set(["splitflap", "clean", "glow"]);
+
+// Validamos si un código de estación tiene formato numérico esperado.
+function isValidStationCode(value) {
+  return /^\d{4,6}$/.test(String(value || ""));
+}
+
+// Validamos si una hora cumple el formato HH:MM de 24 horas.
+function isValidTime(value) {
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || ""));
+}
+
+// Sanitizamos configuración externa para mejorar seguridad y estabilidad.
+function sanitizeConfig(inputConfig) {
+  const base = defaultConfig();
+  const draft = { ...base, ...(inputConfig || {}) };
+  return {
+    coreProvince: safeText(draft.coreProvince) || base.coreProvince,
+    locality: safeText(draft.locality) || base.locality,
+    originCode: isValidStationCode(draft.originCode) ? String(draft.originCode) : base.originCode,
+    destinationCode: isValidStationCode(draft.destinationCode) ? String(draft.destinationCode) : base.destinationCode,
+    useSchedule: Boolean(draft.useSchedule),
+    outboundStart: isValidTime(draft.outboundStart) ? draft.outboundStart : base.outboundStart,
+    outboundEnd: isValidTime(draft.outboundEnd) ? draft.outboundEnd : base.outboundEnd,
+    returnStart: isValidTime(draft.returnStart) ? draft.returnStart : base.returnStart,
+    returnEnd: isValidTime(draft.returnEnd) ? draft.returnEnd : base.returnEnd,
+    effect: ALLOWED_EFFECTS.has(draft.effect) ? draft.effect : base.effect,
+    debug: Boolean(draft.debug)
+  };
+}
+
 // Cargamos configuración desde localStorage o devolvemos defaults.
 function loadConfig() {
   const raw = localStorage.getItem(LS_KEY);
   if (!raw) return defaultConfig();
   try {
     const parsed = JSON.parse(raw);
-    return { ...defaultConfig(), ...parsed };
+    return sanitizeConfig(parsed);
   } catch {
     return defaultConfig();
   }
@@ -146,7 +178,7 @@ function loadConfig() {
 
 // Persistimos configuración en localStorage.
 function saveConfig(config) {
-  localStorage.setItem(LS_KEY, JSON.stringify(config));
+  localStorage.setItem(LS_KEY, JSON.stringify(sanitizeConfig(config)));
 }
 
 // Convertimos HH:MM a minutos desde medianoche.
@@ -290,10 +322,21 @@ function syncConfigUi() {
 function buildStopPrefixes(stationCode) {
   const code = String(stationCode || "");
   const prefixes = [];
+  if (code.length >= 5) prefixes.push(code.slice(0, 5));
   if (code.length >= 4) prefixes.push(code.slice(0, 4));
-  if (code.length >= 3) prefixes.push(code.slice(0, 3));
-  if (code.length >= 2) prefixes.push(code.slice(0, 2));
   return [...new Set(prefixes.filter(Boolean))];
+}
+
+// Normalizamos stopId externos para quedarnos solo con dígitos comparables.
+function normalizeStopId(stopId) {
+  return String(stopId || "").replace(/\D/g, "");
+}
+
+// Comprobamos si una parada de alerta encaja con nuestra estación de forma estricta.
+function matchesStopId(stopId, prefixes) {
+  const normalized = normalizeStopId(stopId);
+  if (!normalized) return false;
+  return prefixes.some((prefix) => normalized.startsWith(prefix));
 }
 
 // Formateamos epoch a HH:MM.
@@ -396,10 +439,9 @@ function alertIcon(type) {
 function getRelevantAlerts(alerts, line, prefixes) {
   const normalizedLine = String(line || "").toUpperCase();
   return alerts.filter((alert) => {
-    const byRoute = alert.routeIds.some((item) => String(item).toUpperCase().includes(normalizedLine));
-    const byStop = alert.stopIds.some((stopId) => prefixes.some((prefix) => String(stopId).startsWith(prefix)));
-    const byText = String(alert.text).toUpperCase().includes(normalizedLine);
-    return byRoute || byStop || byText;
+    const byRoute = normalizedLine ? alert.routeIds.some((item) => String(item).toUpperCase().includes(normalizedLine)) : false;
+    const byStop = alert.stopIds.some((stopId) => matchesStopId(stopId, prefixes));
+    return byRoute || byStop;
   });
 }
 
@@ -462,13 +504,14 @@ function applySplitFlapEffect(targetNode) {
     flap.animate(
       [
         { transform: "rotateX(0deg)", opacity: 0.25 },
-        { transform: "rotateX(65deg)", opacity: 0.55 },
+        { transform: "rotateX(85deg)", opacity: 0.6 },
         { transform: "rotateX(0deg)", opacity: 1 }
       ],
       {
-        duration: 280 + Math.floor(Math.random() * 180),
+        duration: 1900 + Math.floor(Math.random() * 450),
+        delay: Math.floor(Math.random() * 220),
         iterations: 1,
-        easing: "cubic-bezier(.2,.7,.1,1)"
+        easing: "cubic-bezier(.19,.72,.16,1)"
       }
     );
   }
@@ -590,7 +633,7 @@ function closeQr() {
 
 // Construimos una URL compartible que incorpora la configuración en query string.
 function buildShareUrl(config) {
-  const json = JSON.stringify(config);
+  const json = JSON.stringify(sanitizeConfig(config));
   const encoded = btoa(unescape(encodeURIComponent(json)))
     .replaceAll("+", "-")
     .replaceAll("/", "_")
@@ -609,7 +652,7 @@ function parseSharedConfigFromUrl() {
     const base64 = padded + "=".repeat((4 - padded.length % 4) % 4);
     const json = decodeURIComponent(escape(atob(base64)));
     const parsed = JSON.parse(json);
-    return { ...defaultConfig(), ...parsed };
+    return sanitizeConfig(parsed);
   } catch {
     return null;
   }
@@ -618,7 +661,7 @@ function parseSharedConfigFromUrl() {
 // Aplicamos y persistimos la configuración compartida pendiente.
 function applyPendingSharedConfig() {
   if (!state.pendingSharedConfig) return;
-  state.config = { ...defaultConfig(), ...state.pendingSharedConfig };
+  state.config = sanitizeConfig(state.pendingSharedConfig);
   saveConfig(state.config);
   syncConfigUi();
   sharedConfigBanner.classList.add("hidden");
@@ -633,7 +676,7 @@ function applyPendingSharedConfig() {
 
 // Leemos la configuración actual desde la UI.
 function readConfigFromUi() {
-  return {
+  return sanitizeConfig({
     coreProvince: coreSelect.value,
     locality: localitySelect.value,
     originCode: originSelect.value,
@@ -645,12 +688,15 @@ function readConfigFromUi() {
     returnEnd: returnEndInput.value || "23:59",
     effect: effectSelect.value || "splitflap",
     debug: Boolean(debugCheck.checked)
-  };
+  });
 }
 
 // Renderizamos el QR de la configuración actual cargando la librería si hace falta.
 async function renderQrForCurrentConfig() {
   const shareUrl = buildShareUrl(readConfigFromUi());
+  if (shareUrl.length > 1900) {
+    throw new Error("La configuración es demasiado larga para compartir en QR de forma fiable.");
+  }
   qrUrlText.value = shareUrl;
 
   if (!window.QRCode || !window.QRCode.toCanvas) {
