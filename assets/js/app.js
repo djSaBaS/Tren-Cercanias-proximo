@@ -750,6 +750,17 @@ async function renderQrForCurrentConfig() {
   }
   qrUrlText.value = shareUrl;
 
+  if (!window.QRCode || !window.QRCode.toCanvas) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+  qrUrlText.value = shareUrl;
+
   await ensureQrLibrary();
   await window.QRCode.toCanvas(qrCanvas, shareUrl, {
     width: 260,
