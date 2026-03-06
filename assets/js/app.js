@@ -127,13 +127,13 @@ function defaultConfig() {
     outboundEnd: "12:00",
     returnStart: "12:01",
     returnEnd: "23:59",
-    effect: "splitflap",
+    effect: "clean",
     debug: false
   };
 }
 
 // Limitamos los efectos permitidos para evitar configuraciones inválidas o inyectadas.
-const ALLOWED_EFFECTS = new Set(["splitflap", "clean", "glow"]);
+const ALLOWED_EFFECTS = new Set(["clean", "glow"]);
 
 // Validamos si un código de estación tiene formato numérico esperado.
 function isValidStationCode(value) {
@@ -444,6 +444,8 @@ function getRelevantAlerts(alerts, prefixes) {
 function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, roleLabel, loggerInstance) {
   const candidates = [];
   const entities = Array.isArray(tripUpdatesJson?.entity) ? tripUpdatesJson.entity : [];
+  const nowEpoch = Math.floor(Date.now() / 1000);
+  const maxPastSeconds = 90;
 
   for (const entity of entities) {
     const tripUpdate = entity?.tripUpdate;
@@ -456,14 +458,18 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, rol
     const stopTimeUpdates = Array.isArray(tripUpdate?.stopTimeUpdate) ? tripUpdate.stopTimeUpdate : [];
     if (!stopTimeUpdates.length) continue;
 
-    const firstUpdate = stopTimeUpdates[0];
-    const stopId = String(firstUpdate?.stopId || "");
-    if (!stopId) continue;
-    if (!prefixes.some((prefix) => stopId.startsWith(prefix))) continue;
+    const matchingUpdate = stopTimeUpdates.find((update) => {
+      const currentStopId = String(update?.stopId || "");
+      return matchesStopId(currentStopId, prefixes);
+    });
 
-    const rawTime = firstUpdate?.arrival?.time ?? firstUpdate?.departure?.time ?? null;
+    const stopId = String(matchingUpdate?.stopId || "");
+    if (!stopId) continue;
+
+    const rawTime = matchingUpdate?.departure?.time ?? matchingUpdate?.arrival?.time ?? null;
     const timeEpoch = Number(rawTime);
     if (!timeEpoch || Number.isNaN(timeEpoch)) continue;
+    if (timeEpoch < nowEpoch - maxPastSeconds) continue;
 
     candidates.push({
       tripId,
@@ -477,9 +483,16 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, rol
     });
   }
 
-  candidates.sort((a, b) => a.timeEpoch - b.timeEpoch);
-  loggerInstance.push(`Candidatos ${roleLabel} (${prefixes.join(", ")}): ${candidates.length}`);
-  return candidates;
+  const dedupedCandidates = [];
+  const seenTrips = new Set();
+  for (const candidate of candidates.sort((a, b) => a.timeEpoch - b.timeEpoch)) {
+    if (seenTrips.has(candidate.tripId)) continue;
+    seenTrips.add(candidate.tripId);
+    dedupedCandidates.push(candidate);
+  }
+
+  loggerInstance.push(`Candidatos ${roleLabel} (${prefixes.join(", ")}): ${dedupedCandidates.length}`);
+  return dedupedCandidates;
 }
 
 // Aplicamos el efecto de cartel mecánico con giro en dos mitades para simular paneles clásicos.
@@ -710,7 +723,7 @@ function readConfigFromUi() {
     outboundEnd: outboundEndInput.value || "12:00",
     returnStart: returnStartInput.value || "12:01",
     returnEnd: returnEndInput.value || "23:59",
-    effect: effectSelect.value || "splitflap",
+    effect: effectSelect.value || "clean",
     debug: Boolean(debugCheck.checked)
   });
 }
