@@ -132,13 +132,45 @@ function defaultConfig() {
   };
 }
 
+// Limitamos los efectos permitidos para evitar configuraciones inválidas o inyectadas.
+const ALLOWED_EFFECTS = new Set(["splitflap", "clean", "glow"]);
+
+// Validamos si un código de estación tiene formato numérico esperado.
+function isValidStationCode(value) {
+  return /^\d{4,6}$/.test(String(value || ""));
+}
+
+// Validamos si una hora cumple el formato HH:MM de 24 horas.
+function isValidTime(value) {
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || ""));
+}
+
+// Sanitizamos configuración externa para mejorar seguridad y estabilidad.
+function sanitizeConfig(inputConfig) {
+  const base = defaultConfig();
+  const draft = { ...base, ...(inputConfig || {}) };
+  return {
+    coreProvince: safeText(draft.coreProvince) || base.coreProvince,
+    locality: safeText(draft.locality) || base.locality,
+    originCode: isValidStationCode(draft.originCode) ? String(draft.originCode) : base.originCode,
+    destinationCode: isValidStationCode(draft.destinationCode) ? String(draft.destinationCode) : base.destinationCode,
+    useSchedule: Boolean(draft.useSchedule),
+    outboundStart: isValidTime(draft.outboundStart) ? draft.outboundStart : base.outboundStart,
+    outboundEnd: isValidTime(draft.outboundEnd) ? draft.outboundEnd : base.outboundEnd,
+    returnStart: isValidTime(draft.returnStart) ? draft.returnStart : base.returnStart,
+    returnEnd: isValidTime(draft.returnEnd) ? draft.returnEnd : base.returnEnd,
+    effect: ALLOWED_EFFECTS.has(draft.effect) ? draft.effect : base.effect,
+    debug: Boolean(draft.debug)
+  };
+}
+
 // Cargamos configuración desde localStorage o devolvemos defaults.
 function loadConfig() {
   const raw = localStorage.getItem(LS_KEY);
   if (!raw) return defaultConfig();
   try {
     const parsed = JSON.parse(raw);
-    return { ...defaultConfig(), ...parsed };
+    return sanitizeConfig(parsed);
   } catch {
     return defaultConfig();
   }
@@ -146,7 +178,7 @@ function loadConfig() {
 
 // Persistimos configuración en localStorage.
 function saveConfig(config) {
-  localStorage.setItem(LS_KEY, JSON.stringify(config));
+  localStorage.setItem(LS_KEY, JSON.stringify(sanitizeConfig(config)));
 }
 
 // Convertimos HH:MM a minutos desde medianoche.
@@ -286,14 +318,25 @@ function syncConfigUi() {
   debugCheck.checked = Boolean(config.debug);
 }
 
-// Extraemos los prefijos candidatos de una estación para soportar 1700X / 1800X.
+// Extraemos prefijos priorizando el código completo para evitar mezclar estaciones de otros núcleos.
 function buildStopPrefixes(stationCode) {
-  const code = String(stationCode || "");
+  const code = normalizeStopId(stationCode);
   const prefixes = [];
+  if (code.length >= 5) prefixes.push(code.slice(0, 5));
   if (code.length >= 4) prefixes.push(code.slice(0, 4));
-  if (code.length >= 3) prefixes.push(code.slice(0, 3));
-  if (code.length >= 2) prefixes.push(code.slice(0, 2));
   return [...new Set(prefixes.filter(Boolean))];
+}
+
+// Normalizamos stopId externos para quedarnos solo con dígitos comparables.
+function normalizeStopId(stopId) {
+  return String(stopId || "").replace(/\D/g, "");
+}
+
+// Comprobamos si una parada de alerta encaja con nuestra estación de forma estricta.
+function matchesStopId(stopId, prefixes) {
+  const normalized = normalizeStopId(stopId);
+  if (!normalized) return false;
+  return prefixes.some((prefix) => normalized.startsWith(prefix));
 }
 
 // Formateamos epoch a HH:MM.
@@ -392,15 +435,9 @@ function alertIcon(type) {
   return "⚠️";
 }
 
-// Filtramos incidencias relevantes por línea o prefijo de parada.
-function getRelevantAlerts(alerts, line, prefixes) {
-  const normalizedLine = String(line || "").toUpperCase();
-  return alerts.filter((alert) => {
-    const byRoute = alert.routeIds.some((item) => String(item).toUpperCase().includes(normalizedLine));
-    const byStop = alert.stopIds.some((stopId) => prefixes.some((prefix) => String(stopId).startsWith(prefix)));
-    const byText = String(alert.text).toUpperCase().includes(normalizedLine);
-    return byRoute || byStop || byText;
-  });
+// Filtramos incidencias relevantes solo por parada para evitar alertas de otros núcleos con líneas homónimas.
+function getRelevantAlerts(alerts, prefixes) {
+  return alerts.filter((alert) => alert.stopIds.some((stopId) => matchesStopId(stopId, prefixes)));
 }
 
 // Extraemos candidatos por prefijos del stopId.
@@ -445,7 +482,7 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, rol
   return candidates;
 }
 
-// Aplicamos el efecto de cartel mecánico al texto de un nodo.
+// Aplicamos el efecto de cartel mecánico con giro en dos mitades para simular paneles clásicos.
 function applySplitFlapEffect(targetNode) {
   if (!targetNode) return;
   if (targetNode.dataset.flapDone === "1") return;
@@ -455,20 +492,50 @@ function applySplitFlapEffect(targetNode) {
 
   for (const char of originalText) {
     const flap = createNode("span", "flap");
-    const inner = document.createElement("span");
-    inner.textContent = char;
-    flap.appendChild(inner);
+    const flapTop = createNode("span", "flap-top");
+    const flapBottom = createNode("span", "flap-bottom");
+    const flapSplit = createNode("span", "flap-split");
+    const flapTopChar = createNode("span", "flap-top-char");
+    const flapBottomChar = createNode("span", "flap-bottom-char");
+
+    flapTopChar.textContent = char;
+    flapBottomChar.textContent = char;
+
+    flapTop.appendChild(flapTopChar);
+    flapBottom.appendChild(flapBottomChar);
+
+    flap.appendChild(flapTop);
+    flap.appendChild(flapSplit);
+    flap.appendChild(flapBottom);
     wrapper.appendChild(flap);
-    flap.animate(
+
+    flapTop.animate(
       [
-        { transform: "rotateX(0deg)", opacity: 0.25 },
-        { transform: "rotateX(65deg)", opacity: 0.55 },
+        { transform: "rotateX(0deg)", opacity: 0.35 },
+        { transform: "rotateX(-90deg)", opacity: 0.75 },
+        { transform: "rotateX(-180deg)", opacity: 0.95 },
         { transform: "rotateX(0deg)", opacity: 1 }
       ],
       {
-        duration: 280 + Math.floor(Math.random() * 180),
+        duration: 1600 + Math.floor(Math.random() * 260),
+        delay: Math.floor(Math.random() * 180),
         iterations: 1,
-        easing: "cubic-bezier(.2,.7,.1,1)"
+        easing: "cubic-bezier(.22,.7,.16,1)"
+      }
+    );
+
+    flapBottom.animate(
+      [
+        { transform: "rotateX(0deg)", opacity: 0.35 },
+        { transform: "rotateX(90deg)", opacity: 0.75 },
+        { transform: "rotateX(180deg)", opacity: 0.95 },
+        { transform: "rotateX(0deg)", opacity: 1 }
+      ],
+      {
+        duration: 1600 + Math.floor(Math.random() * 260),
+        delay: 80 + Math.floor(Math.random() * 180),
+        iterations: 1,
+        easing: "cubic-bezier(.22,.7,.16,1)"
       }
     );
   }
@@ -590,7 +657,7 @@ function closeQr() {
 
 // Construimos una URL compartible que incorpora la configuración en query string.
 function buildShareUrl(config) {
-  const json = JSON.stringify(config);
+  const json = JSON.stringify(sanitizeConfig(config));
   const encoded = btoa(unescape(encodeURIComponent(json)))
     .replaceAll("+", "-")
     .replaceAll("/", "_")
@@ -609,7 +676,7 @@ function parseSharedConfigFromUrl() {
     const base64 = padded + "=".repeat((4 - padded.length % 4) % 4);
     const json = decodeURIComponent(escape(atob(base64)));
     const parsed = JSON.parse(json);
-    return { ...defaultConfig(), ...parsed };
+    return sanitizeConfig(parsed);
   } catch {
     return null;
   }
@@ -618,7 +685,7 @@ function parseSharedConfigFromUrl() {
 // Aplicamos y persistimos la configuración compartida pendiente.
 function applyPendingSharedConfig() {
   if (!state.pendingSharedConfig) return;
-  state.config = { ...defaultConfig(), ...state.pendingSharedConfig };
+  state.config = sanitizeConfig(state.pendingSharedConfig);
   saveConfig(state.config);
   syncConfigUi();
   sharedConfigBanner.classList.add("hidden");
@@ -633,7 +700,7 @@ function applyPendingSharedConfig() {
 
 // Leemos la configuración actual desde la UI.
 function readConfigFromUi() {
-  return {
+  return sanitizeConfig({
     coreProvince: coreSelect.value,
     locality: localitySelect.value,
     originCode: originSelect.value,
@@ -645,25 +712,58 @@ function readConfigFromUi() {
     returnEnd: returnEndInput.value || "23:59",
     effect: effectSelect.value || "splitflap",
     debug: Boolean(debugCheck.checked)
-  };
+  });
+}
+
+// Cargamos la librería QR desde varios CDN para mejorar robustez en entornos restringidos.
+async function ensureQrLibrary() {
+  if (window.QRCode?.toCanvas) return;
+  const candidateUrls = [
+    "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js",
+    "https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"
+  ];
+
+  let lastError = null;
+  for (const candidateUrl of candidateUrls) {
+    try {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = candidateUrl;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => {
+          if (script.parentNode) script.parentNode.removeChild(script);
+          reject(new Error(`No se pudo cargar ${candidateUrl}`));
+        };
+        document.head.appendChild(script);
+      });
+
+      if (window.QRCode?.toCanvas) return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw new Error(`No se pudo cargar la librería QR. Revisa conexión/CSP. Detalle: ${String(lastError?.message || lastError || "desconocido")}`);
 }
 
 // Renderizamos el QR de la configuración actual cargando la librería si hace falta.
 async function renderQrForCurrentConfig() {
   const shareUrl = buildShareUrl(readConfigFromUi());
+  if (shareUrl.length > 1900) {
+    throw new Error("La configuración es demasiado larga para compartir en QR de forma fiable.");
+  }
   qrUrlText.value = shareUrl;
 
-  if (!window.QRCode || !window.QRCode.toCanvas) {
-    await new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js";
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  }
-
-  await window.QRCode.toCanvas(qrCanvas, shareUrl, { width: 260, margin: 1 });
+  await ensureQrLibrary();
+  await window.QRCode.toCanvas(qrCanvas, shareUrl, {
+    width: 260,
+    margin: 1,
+    color: {
+      dark: "#111827",
+      light: "#ffffff"
+    }
+  });
 }
 
 // Refrescamos el panel de trenes usando la configuración activa.
@@ -727,7 +827,7 @@ async function refreshRealtime() {
   const linesWithAlerts = [];
   for (const train of finalTrains) {
     const prefixes = train.role === "ORIGIN" ? route.originPrefixes : route.destinationPrefixes;
-    train.alerts = getRelevantAlerts(alerts, train.line, prefixes).map((alert) => ({
+    train.alerts = getRelevantAlerts(alerts, prefixes).map((alert) => ({
       ...alert,
       type: classifyAlertType(alert.text)
     }));
@@ -793,7 +893,7 @@ function bindEvents() {
       await renderQrForCurrentConfig();
       openQr();
     } catch (error) {
-      window.alert(`No se pudo generar el QR: ${String(error)}`);
+      window.alert(`No se pudo generar el QR: ${String(error?.message || error || "Error desconocido")}`);
     }
   });
 

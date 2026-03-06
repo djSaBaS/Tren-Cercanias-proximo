@@ -12,6 +12,7 @@
   --warn:#ffcc33;
   --radius:18px;
   --shadow:0 10px 30px rgba(16,24,40,.08);
+  --focus-outline-color:#8da2ff;
 }
 *{box-sizing:border-box;}
 body{
@@ -38,6 +39,11 @@ body{
   font-weight:800;
 }
 .status{margin:0;color:var(--muted);}
+/* Agrupamos acciones rápidas de la cabecera para mantener separación visual. */
+.topbar-actions{
+  display:flex;
+  gap:8px;
+}
 .icon-btn{
   width:40px;
   height:40px;
@@ -49,6 +55,18 @@ body{
   box-shadow:var(--shadow);
   color:var(--text);
   cursor:pointer;
+  text-decoration:none;
+  font-weight:700;
+  font-size:20px;
+}
+/* Reforzamos el foco visible de controles interactivos para accesibilidad por teclado. */
+.icon-btn:focus-visible,
+.link-btn:focus-visible,
+.primary-btn:focus-visible,
+.secondary-btn:focus-visible,
+.inc-btn:focus-visible{
+  outline:3px solid var(--focus-outline-color);
+  outline-offset:2px;
 }
 .card{
   background:var(--card);
@@ -324,18 +342,58 @@ body{
   width:1.08em;
   height:1.46em;
   background:var(--panel);
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
   border-radius:6px;
   overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+  perspective:200px;
+}
+.flap-top,
+.flap-bottom{
+  position:absolute;
+  left:0;
+  width:100%;
+  height:50%;
+  overflow:hidden;
+  backface-visibility:hidden;
+}
+.flap-top{
+  top:0;
+  transform-origin:center bottom;
+  background:linear-gradient(180deg,#1a2233 0%,#0f1728 100%);
+}
+.flap-bottom{
+  bottom:0;
+  transform-origin:center top;
+  background:linear-gradient(180deg,#0f1728 0%,#0b1220 100%);
+}
+.flap-top-char,
+.flap-bottom-char{
+  position:absolute;
+  left:0;
+  width:100%;
+  height:200%;
   display:grid;
   place-items:center;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
-}
-.flap span{
   color:var(--panel-text);
   font-weight:900;
   font-size:1em;
   line-height:1;
+}
+.flap-top-char{
+  top:0;
+}
+.flap-bottom-char{
+  top:-100%;
+}
+.flap-split{
+  position:absolute;
+  left:0;
+  top:50%;
+  width:100%;
+  height:1px;
+  background:rgba(255,255,255,.12);
+  box-shadow:0 1px 0 rgba(0,0,0,.35);
 }
 @media (max-width:560px){
   .train-time{font-size:42px;}
