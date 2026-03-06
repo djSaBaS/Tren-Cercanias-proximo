@@ -435,6 +435,7 @@ function alertIcon(type) {
   return "⚠️";
 }
 
+
 // Filtramos incidencias relevantes solo por parada para evitar alertas de otros núcleos con líneas homónimas.
 function getRelevantAlerts(alerts, prefixes) {
   return alerts.filter((alert) => alert.stopIds.some((stopId) => matchesStopId(stopId, prefixes)));
@@ -737,6 +738,7 @@ async function ensureQrLibrary() {
   }
 
   throw new Error(`No se pudo cargar la librería QR. Revisa conexión/CSP. Detalle: ${String(lastError?.message || lastError || "desconocido")}`);
+
 }
 
 // Renderizamos el QR de la configuración actual cargando la librería si hace falta.
@@ -744,6 +746,18 @@ async function renderQrForCurrentConfig() {
   const shareUrl = buildShareUrl(readConfigFromUi());
   if (shareUrl.length > 1900) {
     throw new Error("La configuración es demasiado larga para compartir en QR de forma fiable.");
+  }
+  qrUrlText.value = shareUrl;
+
+  if (!window.QRCode || !window.QRCode.toCanvas) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+
   }
   qrUrlText.value = shareUrl;
 
