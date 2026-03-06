@@ -1,342 +1,344 @@
-/* Definimos variables de color para consistencia */
+/* Definimos variables de color para mantener consistencia visual. */
 :root{
-  /* Color de fondo general */
   --bg:#f6f7fb;
-  /* Color de tarjeta */
   --card:#ffffff;
-  /* Color de texto principal */
   --text:#101828;
-  /* Color de texto secundario */
   --muted:#667085;
-  /* Color de borde suave */
   --border:#eaecf0;
-  /* Color de badge */
-  --badge:#101828;
-  /* Color de enlaces */
-  --link:#2e4fff;
-  /* Sombra suave */
-  --shadow:0 10px 30px rgba(16,24,40,.08);
-  /* Radio general */
+  --primary:#2e4fff;
+  --panel:#0b0f17;
+  --panel-2:#161c29;
+  --panel-text:#f6f8fb;
+  --warn:#ffcc33;
   --radius:18px;
+  --shadow:0 10px 30px rgba(16,24,40,.08);
 }
-
-/* Normalizamos el box-sizing para evitar cálculos inconsistentes */
-*{
-  /* Incluimos padding y border en el tamaño */
-  box-sizing:border-box;
-}
-
-/* Estilos base del body */
+*{box-sizing:border-box;}
 body{
-  /* Eliminamos margen por defecto */
   margin:0;
-  /* Definimos fuente moderna */
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;
-  /* Definimos color de texto */
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;
   color:var(--text);
-  /* Definimos color de fondo */
   background:var(--bg);
 }
-
-/* Contenedor principal */
 .page{
-  /* Limitamos el ancho para lectura */
-  max-width:880px;
-  /* Centramos */
+  max-width:920px;
   margin:0 auto;
-  /* Añadimos padding */
-  padding:22px 16px 32px;
+  padding:22px 16px 30px;
 }
-
-/* Barra superior */
 .topbar{
-  /* Ponemos elementos en fila */
   display:flex;
-  /* Separamos título y acciones */
   justify-content:space-between;
-  /* Alineamos verticalmente */
   align-items:flex-start;
-  /* Espaciado inferior */
-  margin-bottom:14px;
+  margin-bottom:16px;
+  gap:12px;
 }
-
-/* Título */
-.title h1{
-  /* Ajustamos márgenes */
+.topbar h1{
   margin:0 0 6px 0;
-  /* Tamaño de título */
   font-size:28px;
-  /* Peso */
   font-weight:800;
 }
-
-/* Línea de estado */
-.status{
-  /* Quitamos margen */
-  margin:0;
-  /* Color secundario */
-  color:var(--muted);
-}
-
-/* Botón icono */
+.status{margin:0;color:var(--muted);}
 .icon-btn{
-  /* Tamaño cuadrado */
   width:40px;
-  /* Alto */
   height:40px;
-  /* Centramos contenido */
   display:grid;
-  /* Centrado */
   place-items:center;
-  /* Fondo */
   background:var(--card);
-  /* Borde */
   border:1px solid var(--border);
-  /* Radio */
   border-radius:12px;
-  /* Sin subrayado */
-  text-decoration:none;
-  /* Color */
+  box-shadow:var(--shadow);
   color:var(--text);
-  /* Sombra suave */
-  box-shadow:var(--shadow);
+  cursor:pointer;
 }
-
-/* Tarjeta */
 .card{
-  /* Fondo blanco */
   background:var(--card);
-  /* Borde suave */
   border:1px solid var(--border);
-  /* Radio */
   border-radius:var(--radius);
-  /* Sombra */
   box-shadow:var(--shadow);
-  /* Padding */
   padding:18px;
 }
-
-/* Título estación */
-.card h2{
-  /* Ajustamos margen */
-  margin:2px 0 6px;
-  /* Tamaño */
-  font-size:26px;
-}
-
-/* Texto secundario */
-.muted{
-  /* Color suave */
-  color:var(--muted);
-}
-
-/* Contenedor trenes */
-.trains{
-  /* Separación superior */
-  margin-top:14px;
-  /* Layout en columna */
+.card h2{margin:0 0 6px 0;font-size:26px;}
+.muted{color:var(--muted);}
+.shared-banner{
   display:flex;
-  /* Dirección */
+  align-items:center;
+  gap:12px;
+  justify-content:space-between;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  border-radius:14px;
+  padding:12px 14px;
+  margin-bottom:14px;
+}
+.shared-banner-text{flex:1;}
+.trains{
+  margin-top:14px;
+  display:flex;
   flex-direction:column;
-  /* Espacio entre tarjetas */
   gap:12px;
 }
-
-/* Tarjeta de tren */
 .train{
-  /* Borde suave */
   border:1px solid var(--border);
-  /* Radio */
   border-radius:14px;
-  /* Padding */
   padding:14px;
-  /* Layout */
   display:flex;
-  /* Espacio */
   justify-content:space-between;
-  /* Alineación */
   align-items:flex-start;
-  /* Fondo */
+  gap:14px;
   background:#fff;
 }
-
-/* Columna izquierda */
+.train.effect-glow{
+  border-color:#d0d7ff;
+  box-shadow:0 8px 24px rgba(46,79,255,.10);
+}
 .train-left{
-  /* Layout en columna */
   display:flex;
-  /* Dirección */
   flex-direction:column;
-  /* Espaciado */
   gap:6px;
 }
-
-/* Etiqueta tren */
 .train-label{
-  /* Tamaño */
   font-size:13px;
-  /* Color */
   color:var(--muted);
 }
-
-/* Hora grande */
 .train-time{
-  /* Fuente tipo panel */
   font-variant-numeric:tabular-nums;
-  /* Tamaño */
   font-size:48px;
-  /* Peso */
   font-weight:900;
-  /* Line-height */
   line-height:1;
+  letter-spacing:-1px;
 }
-
-/* Subtexto hora */
 .train-sub{
-  /* Color */
   color:var(--muted);
-  /* Tamaño */
   font-size:14px;
 }
-
-/* Columna derecha */
 .train-right{
-  /* Alineamos a la derecha */
   text-align:right;
-  /* Layout en columna */
   display:flex;
-  /* Dirección */
   flex-direction:column;
-  /* Separación */
   gap:8px;
-  /* Min ancho para consistencia */
-  min-width:140px;
+  min-width:150px;
 }
-
-/* Badge de andén */
 .badge{
-  /* Color de fondo oscuro */
-  background:var(--badge);
-  /* Texto blanco */
+  background:var(--panel);
   color:#fff;
-  /* Padding */
   padding:6px 10px;
-  /* Radio */
   border-radius:999px;
-  /* Tamaño */
   font-size:13px;
-  /* Peso */
   font-weight:800;
-  /* Ajuste de números */
   font-variant-numeric:tabular-nums;
+  align-self:flex-end;
 }
-
-/* Línea */
-.line{
-  /* Tamaño */
-  font-size:14px;
-  /* Color */
-  color:var(--muted);
-}
-
-/* Footer de tarjeta */
-.card-footer{
-  /* Separación superior */
-  margin-top:14px;
-  /* Borde superior */
-  border-top:1px solid var(--border);
-  /* Padding */
-  padding-top:12px;
-  /* Layout */
+.line{color:var(--muted);font-size:14px;}
+.inc-list{
   display:flex;
-  /* Separación */
-  gap:12px;
-  /* Ajuste */
-  justify-content:space-between;
-  /* Alineación */
-  align-items:center;
-  /* Wrap en móvil */
+  justify-content:flex-end;
+  gap:6px;
+  margin-top:2px;
   flex-wrap:wrap;
 }
-
-/* Botón tipo enlace */
-.link-btn{
-  /* Sin fondo */
-  background:none;
-  /* Sin borde */
-  border:none;
-  /* Color enlace */
-  color:var(--link);
-  /* Cursor */
+.inc-btn{
+  border:1px solid rgba(255,204,51,.45);
+  background:rgba(255,204,51,.12);
+  color:#8a6200;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:12px;
   cursor:pointer;
-  /* Padding */
-  padding:6px 0;
-  /* Subrayado */
-  text-decoration:underline;
-  /* Tamaño */
+}
+.incidence-banner{
+  margin-top:10px;
+  margin-bottom:10px;
+  padding:10px 12px;
+  background:#fff7db;
+  border:1px solid #fde68a;
+  border-radius:12px;
+  color:#7a5200;
   font-size:14px;
 }
-
-/* Debug */
-.debug{
-  /* Separación superior */
-  margin-top:12px;
-  /* Fondo gris suave */
-  background:#0b0f17;
-  /* Texto claro */
-  color:#e6e7ea;
-  /* Borde */
-  border:1px solid #1b2130;
-  /* Radio */
-  border-radius:14px;
-  /* Padding */
-  padding:12px;
-  /* Fuente monoespaciada */
-  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  /* Tamaño */
-  font-size:12px;
-  /* Overflow */
-  overflow:auto;
-  /* Max alto */
-  max-height:280px;
-}
-
-/* Ocultamos elementos */
-.hidden{
-  /* No mostramos */
-  display:none;
-}
-
-/* Footer */
-.footer{
-  /* Separación superior */
+.card-footer{
   margin-top:14px;
-  /* Texto centrado */
+  border-top:1px solid var(--border);
+  padding-top:12px;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:12px;
+}
+.link-btn{
+  background:none;
+  border:none;
+  color:var(--primary);
+  cursor:pointer;
+  text-decoration:underline;
+  padding:0;
+}
+.debug{
+  margin-top:12px;
+  background:var(--panel);
+  color:var(--panel-text);
+  border:1px solid #1b2130;
+  border-radius:14px;
+  padding:12px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  font-size:12px;
+  overflow:auto;
+  max-height:280px;
+  white-space:pre-wrap;
+}
+.hidden{display:none !important;}
+.footer{
+  margin-top:16px;
   text-align:center;
-  /* Color */
   color:var(--muted);
-  /* Tamaño */
   font-size:13px;
 }
-
-/* Enlaces footer */
 .footer a{
-  /* Color */
-  color:var(--link);
-  /* Subrayado */
+  color:var(--primary);
   text-decoration:none;
 }
-
-/* Añadimos subrayado al pasar */
-.footer a:hover{
-  /* Subrayado */
-  text-decoration:underline;
+.footer a:hover{text-decoration:underline;}
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:1200;
 }
-
-/* Ajustes para móviles */
-@media (max-width:520px){
-  /* Reducimos hora */
-  .train-time{
-    /* Tamaño menor */
-    font-size:42px;
-  }
+.backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(11,15,23,.55);
+}
+.drawer{
+  position:absolute;
+  top:0;
+  right:0;
+  width:min(440px, 92vw);
+  height:100%;
+  background:#fff;
+  box-shadow:-18px 0 40px rgba(16,24,40,.18);
+  display:flex;
+  flex-direction:column;
+}
+.drawer-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+}
+.drawer-header h3{margin:0;font-size:20px;}
+.drawer-body{
+  overflow:auto;
+  padding:16px;
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:14px;
+}
+.field label{
+  font-size:14px;
+  font-weight:600;
+}
+.field select,
+.field input,
+.field textarea{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px 12px;
+  font:inherit;
+  background:#fff;
+  color:var(--text);
+}
+.field-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.check-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+.drawer-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:10px;
+}
+.primary-btn{
+  background:var(--primary);
+  color:#fff;
+  border:1px solid var(--primary);
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+.secondary-btn{
+  background:#fff;
+  color:var(--primary);
+  border:1px solid #c7d2fe;
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+.modal{
+  position:absolute;
+  left:50%;
+  top:6vh;
+  transform:translateX(-50%);
+  width:min(640px, 92vw);
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 24px 70px rgba(16,24,40,.25);
+  overflow:hidden;
+}
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+}
+.modal-header h3{margin:0;font-size:20px;}
+.modal-body{padding:16px;}
+.qr-wrap{
+  display:grid;
+  place-items:center;
+  background:#f8fafc;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:12px;
+  margin-bottom:14px;
+}
+.splitflap{
+  display:inline-flex;
+  gap:2px;
+}
+.flap{
+  position:relative;
+  width:1.08em;
+  height:1.46em;
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.flap span{
+  color:var(--panel-text);
+  font-weight:900;
+  font-size:1em;
+  line-height:1;
+}
+@media (max-width:560px){
+  .train-time{font-size:42px;}
+  .field-grid{grid-template-columns:1fr;}
+  .shared-banner{flex-direction:column;align-items:flex-start;}
 }
