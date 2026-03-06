@@ -495,9 +495,14 @@ function applySplitFlapEffect(targetNode) {
     const flapTop = createNode("span", "flap-top");
     const flapBottom = createNode("span", "flap-bottom");
     const flapSplit = createNode("span", "flap-split");
+    const flapTopChar = createNode("span", "flap-top-char");
+    const flapBottomChar = createNode("span", "flap-bottom-char");
 
-    flapTop.textContent = char;
-    flapBottom.textContent = char;
+    flapTopChar.textContent = char;
+    flapBottomChar.textContent = char;
+
+    flapTop.appendChild(flapTopChar);
+    flapBottom.appendChild(flapBottomChar);
 
     flap.appendChild(flapTop);
     flap.appendChild(flapSplit);
@@ -747,18 +752,6 @@ async function renderQrForCurrentConfig() {
   const shareUrl = buildShareUrl(readConfigFromUi());
   if (shareUrl.length > 1900) {
     throw new Error("La configuración es demasiado larga para compartir en QR de forma fiable.");
-  }
-  qrUrlText.value = shareUrl;
-
-  if (!window.QRCode || !window.QRCode.toCanvas) {
-    await new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js";
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-
   }
   qrUrlText.value = shareUrl;
 
