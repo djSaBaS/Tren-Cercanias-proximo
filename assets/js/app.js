@@ -758,6 +758,7 @@ async function renderQrForCurrentConfig() {
       script.onerror = reject;
       document.head.appendChild(script);
     });
+
   }
   qrUrlText.value = shareUrl;
 
