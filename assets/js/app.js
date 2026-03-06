@@ -551,13 +551,22 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, stationCode, pla
 // Obtenemos el stopTimeUpdate de una estación dentro de un viaje concreto.
 function findStationUpdate(stopTimeUpdates, stationCode, prefixes) {
   const exactStationCode = normalizeStopId(stationCode).slice(0, 5);
-  return stopTimeUpdates.find((update) => {
-    const currentStopId = normalizeStopId(update?.stopId || "");
-    return exactStationCode && currentStopId.startsWith(exactStationCode);
-  }) || stopTimeUpdates.find((update) => {
-    const currentStopId = String(update?.stopId || "");
-    return matchesStopId(currentStopId, stationCode, prefixes);
-  }) || null;
+  let fallbackMatch = null;
+
+  for (const update of stopTimeUpdates) {
+    const rawStopId = String(update?.stopId || "");
+    const normalizedStopId = normalizeStopId(rawStopId);
+
+    if (exactStationCode && normalizedStopId.startsWith(exactStationCode)) {
+      return update;
+    }
+
+    if (!fallbackMatch && matchesStopId(rawStopId, stationCode, prefixes)) {
+      fallbackMatch = update;
+    }
+  }
+
+  return fallbackMatch;
 }
 
 // Comprobamos que un trip recorre origen y destino en el orden correcto.
@@ -941,12 +950,20 @@ async function refreshRealtime() {
 
   logger.push(`Candidatos origen compatibles con ruta: ${compatibleOriginCandidates.length}/${originCandidates.length}`);
 
+  const selectedOriginCandidates = compatibleOriginCandidates.length
+    ? compatibleOriginCandidates
+    : originCandidates;
+
+  if (!compatibleOriginCandidates.length && originCandidates.length) {
+    logger.push("Fallback: sin trips compatibles completos; se muestran salidas de origen sin validar destino.");
+  }
+
   let finalTrains = [];
-  if (compatibleOriginCandidates.length >= 2) {
-    finalTrains = compatibleOriginCandidates.slice(0, 2);
-  } else if (compatibleOriginCandidates.length === 1) {
-    finalTrains = [compatibleOriginCandidates[0]];
-    const extra = destinationCandidates.find((candidate) => candidate.tripId !== compatibleOriginCandidates[0].tripId);
+  if (selectedOriginCandidates.length >= 2) {
+    finalTrains = selectedOriginCandidates.slice(0, 2);
+  } else if (selectedOriginCandidates.length === 1) {
+    finalTrains = [selectedOriginCandidates[0]];
+    const extra = destinationCandidates.find((candidate) => candidate.tripId !== selectedOriginCandidates[0].tripId);
     if (extra) finalTrains.push(extra);
   } else {
     finalTrains = destinationCandidates.slice(0, 2);
