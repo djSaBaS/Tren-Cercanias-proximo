@@ -1,75 +1,72 @@
-<!-- Definimos el tipo de documento como HTML5 -->
+<!-- Declaramos el tipo de documento HTML5. -->
 <!doctype html>
-<!-- Abrimos el documento HTML e indicamos el idioma -->
+<!-- Abrimos el documento e indicamos el idioma principal. -->
 <html lang="es">
-<!-- Abrimos la cabecera del documento -->
 <head>
-  <!-- Definimos la codificación para soportar caracteres especiales -->
+  <!-- Definimos la codificación UTF-8 para soportar caracteres especiales. -->
   <meta charset="utf-8" />
-  <!-- Configuramos el viewport para que sea responsive -->
+  <!-- Ajustamos el viewport para móviles y pantallas pequeñas. -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Definimos el título de la pestaña -->
+  <!-- Definimos el título de la pestaña del navegador. -->
   <title>Cercanías · Próximos trenes</title>
-  <!-- Describimos la página para SEO y previsualizaciones -->
-  <meta name="description" content="Panel de próximos trenes Cercanías (Atocha ↔ Chamartín) con GTFS-RT, auto-refresh y debug opcional." />
-  <!-- Declaramos el color de la barra del navegador en móviles -->
-  <meta name="theme-color" content="#0b0f17" />
-  <!-- Referenciamos un favicon (pon un renfe.ico o renfe.png en /assets/img/) -->
+  <!-- Añadimos una descripción corta de la página. -->
+  <meta name="description" content="Panel configurable de próximos trenes Cercanías con horarios, QR y efecto cartel mecánico." />
+  <!-- Referenciamos el favicon del proyecto si existe en el repositorio. -->
   <link rel="icon" href="./assets/img/favicon.png" />
-  <!-- Cargamos el CSS principal -->
+  <!-- Cargamos la hoja de estilos principal del proyecto. -->
   <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
-<!-- Abrimos el cuerpo del documento -->
 <body>
-  <!-- Contenedor principal centrado -->
+  <!-- Definimos el contenedor principal de la página. -->
   <main class="page">
-    <!-- Cabecera superior del panel -->
-    <header class="topbar" aria-label="Cabecera del panel">
-      <!-- Título -->
-      <div class="title">
-        <!-- Texto principal -->
+    <!-- Dibujamos la cabecera superior del panel. -->
+    <header class="topbar">
+      <!-- Agrupamos título y estado actual. -->
+      <div class="topbar-left">
+        <!-- Mostramos el título principal. -->
         <h1>Cercanías · Próximos trenes</h1>
-        <!-- Estado dinámico -->
+        <!-- Mostramos la línea de estado dinámica. -->
         <p id="statusLine" class="status" aria-live="polite">--:--:-- · Preparando…</p>
       </div>
-
-      <!-- Acciones de cabecera -->
-      <div class="actions">
-        <!-- Botón de ayuda/manual -->
-        <a class="icon-btn" href="./manual.html" aria-label="Abrir manual de usuario" title="Manual">
-          <!-- Icono de interrogación -->
-          ?
-        </a>
+      <!-- Agrupamos los botones de acción superiores. -->
+      <div class="topbar-actions">
+        <!-- Definimos el botón para abrir la configuración. -->
+        <button id="openConfigBtn" class="icon-btn" type="button" aria-label="Abrir configuración" title="Configuración">⚙</button>
       </div>
     </header>
 
-    <!-- Tarjeta principal -->
-    <section class="card" aria-label="Panel de próximos trenes">
-      <!-- Título estación -->
-      <h2 id="stationName">Estación: —</h2>
-      <!-- Subtítulo -->
-      <p id="stationSubtitle" class="muted">Estos son los próximos trenes.</p>
-
-      <!-- Contenedor de trenes -->
-      <div id="trains" class="trains" aria-live="polite"></div>
-
-      <!-- Pie de tarjeta -->
-      <div class="card-footer">
-        <!-- Información de refresco -->
-        <p class="muted">Se actualiza automáticamente (sin botones). · Refresco: <span id="refreshLabel">—</span></p>
-        <!-- Toggle de debug -->
-        <button id="debugToggle" class="link-btn" type="button" aria-expanded="false" aria-controls="debugBox">
-          Debug opcional (para comparar feed y panel).
-        </button>
-      </div>
-
-      <!-- Caja debug (colapsable) -->
-      <div id="debugBox" class="debug hidden" role="region" aria-label="Información de depuración"></div>
+    <!-- Mostramos un aviso cuando la página llega con una configuración compartida por QR. -->
+    <section id="sharedConfigBanner" class="shared-banner hidden" aria-live="polite">
+      <!-- Mostramos el texto principal del aviso. -->
+      <div class="shared-banner-text">Se ha detectado una configuración compartida. Puedes revisarla y aplicarla.</div>
+      <!-- Definimos el botón para aplicar la configuración compartida. -->
+      <button id="applySharedConfigBtn" class="primary-btn" type="button">Aplicar configuración</button>
     </section>
 
-    <!-- Pie de página -->
-    <footer class="footer" aria-label="Pie de página">
-      <!-- Texto de autoría -->
+    <!-- Definimos la tarjeta principal del panel de trenes. -->
+    <section class="card">
+      <!-- Mostramos el nombre de la estación origen según la hora o la configuración. -->
+      <h2 id="stationName">Estación: —</h2>
+      <!-- Mostramos el subtítulo contextual de dirección. -->
+      <p id="stationSubtitle" class="muted">Estos son los próximos trenes.</p>
+      <!-- Dibujamos un contenedor para avisos e incidencias de la ruta. -->
+      <div id="incidenceBanner" class="incidence-banner hidden"></div>
+      <!-- Definimos el contenedor donde se pintarán los trenes. -->
+      <div id="trains" class="trains" aria-live="polite"></div>
+      <!-- Mostramos el pie de la tarjeta con refresh y debug. -->
+      <div class="card-footer">
+        <!-- Indicamos el tiempo de refresco automático. -->
+        <p class="muted">Se actualiza automáticamente (sin botones). · Refresco: <span id="refreshLabel">60s</span></p>
+        <!-- Definimos un botón para abrir o cerrar el debug. -->
+        <button id="debugToggle" class="link-btn" type="button" aria-expanded="false" aria-controls="debugBox">Debug opcional</button>
+      </div>
+      <!-- Definimos la caja donde se mostrará el debug cuando esté activo. -->
+      <div id="debugBox" class="debug hidden"></div>
+    </section>
+
+    <!-- Mostramos el pie de página del proyecto. -->
+    <footer class="footer">
+      <!-- Indicamos autoría y enlaces de perfil. -->
       <p>
         Creado por
         <a href="https://www.linkedin.com/in/juanantoniosanchezplaza/" target="_blank" rel="noopener">Juan Antonio Sanchez Plaza</a>
@@ -81,10 +78,169 @@
     </footer>
   </main>
 
-  <!-- Cargamos librería utilitaria -->
-  <script src="./assets/js/lib.js"></script>
-  <!-- Cargamos lógica principal -->
+  <!-- Definimos el overlay de configuración. -->
+  <div id="configOverlay" class="overlay hidden">
+    <!-- Definimos la capa de oscurecimiento para cerrar fuera del panel. -->
+    <div id="configBackdrop" class="backdrop"></div>
+    <!-- Definimos el panel lateral de configuración. -->
+    <aside class="drawer" aria-label="Panel de configuración">
+      <!-- Mostramos la cabecera del drawer. -->
+      <div class="drawer-header">
+        <!-- Título del panel. -->
+        <h3>Configuración</h3>
+        <!-- Botón para cerrar el panel. -->
+        <button id="closeConfigBtn" class="icon-btn" type="button" aria-label="Cerrar configuración" title="Cerrar">✕</button>
+      </div>
+
+      <!-- Definimos el cuerpo con scroll del panel. -->
+      <div class="drawer-body">
+        <!-- Agrupamos el selector de núcleo de cercanías. -->
+        <div class="field">
+          <!-- Etiquetamos el selector del núcleo. -->
+          <label for="coreSelect">Núcleo / red</label>
+          <!-- Definimos el select del núcleo. -->
+          <select id="coreSelect"></select>
+        </div>
+
+        <!-- Agrupamos el selector de localidad. -->
+        <div class="field">
+          <!-- Etiquetamos el selector de localidad. -->
+          <label for="localitySelect">Localidad</label>
+          <!-- Definimos el select de localidad. -->
+          <select id="localitySelect"></select>
+        </div>
+
+        <!-- Agrupamos el selector de estación origen. -->
+        <div class="field">
+          <!-- Etiquetamos el selector de origen. -->
+          <label for="originSelect">Parada de ida</label>
+          <!-- Definimos el select del origen. -->
+          <select id="originSelect"></select>
+        </div>
+
+        <!-- Agrupamos el selector de estación destino. -->
+        <div class="field">
+          <!-- Etiquetamos el selector de destino. -->
+          <label for="destinationSelect">Parada de vuelta</label>
+          <!-- Definimos el select del destino. -->
+          <select id="destinationSelect"></select>
+        </div>
+
+        <!-- Agrupamos el selector del efecto visual. -->
+        <div class="field">
+          <!-- Etiquetamos el selector de efecto. -->
+          <label for="effectSelect">Efecto visual</label>
+          <!-- Definimos el selector del efecto visual. -->
+          <select id="effectSelect">
+            <!-- Opción de efecto clásico. -->
+            <option value="splitflap">Cartel mecánico</option>
+            <!-- Opción visual limpia sin animación. -->
+            <option value="clean">Limpio</option>
+            <!-- Opción visual con brillo suave. -->
+            <option value="glow">Resalte suave</option>
+          </select>
+        </div>
+
+        <!-- Agrupamos el check de horario personalizado. -->
+        <div class="check-row">
+          <!-- Definimos el checkbox de uso horario. -->
+          <input id="useScheduleCheck" type="checkbox" />
+          <!-- Etiquetamos el checkbox del horario. -->
+          <label for="useScheduleCheck">Establecer horario ida / vuelta</label>
+        </div>
+
+        <!-- Definimos el bloque de horarios configurables. -->
+        <div id="scheduleFields" class="schedule-fields">
+          <!-- Agrupamos los campos de ida. -->
+          <div class="field-grid">
+            <!-- Campo inicio de ida. -->
+            <div class="field">
+              <!-- Etiquetamos el input. -->
+              <label for="outboundStartInput">Ida desde</label>
+              <!-- Definimos el input time. -->
+              <input id="outboundStartInput" type="time" value="00:00" />
+            </div>
+            <!-- Campo fin de ida. -->
+            <div class="field">
+              <!-- Etiquetamos el input. -->
+              <label for="outboundEndInput">Ida hasta</label>
+              <!-- Definimos el input time. -->
+              <input id="outboundEndInput" type="time" value="12:00" />
+            </div>
+          </div>
+
+          <!-- Agrupamos los campos de vuelta. -->
+          <div class="field-grid">
+            <!-- Campo inicio de vuelta. -->
+            <div class="field">
+              <!-- Etiquetamos el input. -->
+              <label for="returnStartInput">Vuelta desde</label>
+              <!-- Definimos el input time. -->
+              <input id="returnStartInput" type="time" value="12:01" />
+            </div>
+            <!-- Campo fin de vuelta. -->
+            <div class="field">
+              <!-- Etiquetamos el input. -->
+              <label for="returnEndInput">Vuelta hasta</label>
+              <!-- Definimos el input time. -->
+              <input id="returnEndInput" type="time" value="23:59" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Agrupamos el check de debug. -->
+        <div class="check-row">
+          <!-- Definimos el checkbox del debug. -->
+          <input id="debugCheck" type="checkbox" />
+          <!-- Etiquetamos el checkbox del debug. -->
+          <label for="debugCheck">Activar debug</label>
+        </div>
+
+        <!-- Definimos el pie del drawer con acciones. -->
+        <div class="drawer-actions">
+          <!-- Definimos el botón de guardar configuración. -->
+          <button id="saveConfigBtn" class="primary-btn" type="button">Guardar configuración</button>
+          <!-- Definimos el botón para abrir el QR. -->
+          <button id="showQrBtn" class="secondary-btn" type="button">QR</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Definimos el overlay del modal QR. -->
+  <div id="qrOverlay" class="overlay hidden">
+    <!-- Definimos la capa de fondo del modal QR. -->
+    <div id="qrBackdrop" class="backdrop"></div>
+    <!-- Definimos la ventana del QR. -->
+    <section class="modal" aria-label="Código QR de configuración">
+      <!-- Mostramos la cabecera del modal. -->
+      <div class="modal-header">
+        <!-- Título del modal. -->
+        <h3>Compartir configuración</h3>
+        <!-- Botón de cierre del modal. -->
+        <button id="closeQrBtn" class="icon-btn" type="button" aria-label="Cerrar QR" title="Cerrar">✕</button>
+      </div>
+      <!-- Definimos el cuerpo del modal. -->
+      <div class="modal-body">
+        <!-- Explicamos el funcionamiento del QR. -->
+        <p class="muted">Este QR lleva a la misma página con la configuración lista para aplicarla.</p>
+        <!-- Definimos el contenedor del canvas QR. -->
+        <div class="qr-wrap">
+          <!-- Dibujamos el canvas del QR. -->
+          <canvas id="qrCanvas" width="260" height="260"></canvas>
+        </div>
+        <!-- Mostramos un enlace compartible como alternativa. -->
+        <div class="field">
+          <!-- Etiquetamos el textarea del enlace. -->
+          <label for="qrUrlText">Enlace compartible</label>
+          <!-- Definimos el textarea de la URL larga. -->
+          <textarea id="qrUrlText" rows="5" readonly></textarea>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Cargamos el JavaScript principal del proyecto. -->
   <script src="./assets/js/app.js"></script>
 </body>
-<!-- Cerramos el documento -->
 </html>
