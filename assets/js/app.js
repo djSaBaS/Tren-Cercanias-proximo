@@ -548,6 +548,36 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, stationCode, pla
   return dedupedCandidates;
 }
 
+// Obtenemos el stopTimeUpdate de una estación dentro de un viaje concreto.
+function findStationUpdate(stopTimeUpdates, stationCode, prefixes) {
+  const exactStationCode = normalizeStopId(stationCode).slice(0, 5);
+  return stopTimeUpdates.find((update) => {
+    const currentStopId = normalizeStopId(update?.stopId || "");
+    return exactStationCode && currentStopId.startsWith(exactStationCode);
+  }) || stopTimeUpdates.find((update) => {
+    const currentStopId = String(update?.stopId || "");
+    return matchesStopId(currentStopId, stationCode, prefixes);
+  }) || null;
+}
+
+// Comprobamos que un trip recorre origen y destino en el orden correcto.
+function tripMatchesRoute(stopTimeUpdates, originCode, originPrefixes, destinationCode, destinationPrefixes) {
+  const originUpdate = findStationUpdate(stopTimeUpdates, originCode, originPrefixes);
+  const destinationUpdate = findStationUpdate(stopTimeUpdates, destinationCode, destinationPrefixes);
+  if (!originUpdate || !destinationUpdate) return false;
+
+  const originSequence = Number(originUpdate?.stopSequence ?? originUpdate?.stop_sequence);
+  const destinationSequence = Number(destinationUpdate?.stopSequence ?? destinationUpdate?.stop_sequence);
+
+  if (Number.isFinite(originSequence) && Number.isFinite(destinationSequence)) {
+    return destinationSequence > originSequence;
+  }
+
+  const originIndex = stopTimeUpdates.indexOf(originUpdate);
+  const destinationIndex = stopTimeUpdates.indexOf(destinationUpdate);
+  return originIndex >= 0 && destinationIndex > originIndex;
+}
+
 // Aplicamos el efecto de cartel mecánico con giro en dos mitades para simular paneles clásicos.
 function applySplitFlapEffect(targetNode) {
   if (!targetNode) return;
@@ -891,12 +921,32 @@ async function refreshRealtime() {
   const originCandidates = extractCandidatesByPrefixes(tripUpdates, route.originPrefixes, originCode, platformMap, "ORIGIN", logger);
   const destinationCandidates = extractCandidatesByPrefixes(tripUpdates, route.destinationPrefixes, destinationCode, platformMap, "DESTINATION", logger);
 
+  const tripUpdatesByTripId = new Map();
+  for (const entity of Array.isArray(tripUpdates?.entity) ? tripUpdates.entity : []) {
+    const tripUpdate = entity?.tripUpdate;
+    const tripId = String(tripUpdate?.trip?.tripId || "");
+    if (!tripId) continue;
+    const stopTimeUpdates = Array.isArray(tripUpdate?.stopTimeUpdate) ? tripUpdate.stopTimeUpdate : [];
+    if (!stopTimeUpdates.length) continue;
+    if (!tripUpdatesByTripId.has(tripId) || stopTimeUpdates.length > tripUpdatesByTripId.get(tripId).length) {
+      tripUpdatesByTripId.set(tripId, stopTimeUpdates);
+    }
+  }
+
+  const compatibleOriginCandidates = originCandidates.filter((candidate) => {
+    const stopTimeUpdates = tripUpdatesByTripId.get(candidate.tripId);
+    if (!stopTimeUpdates) return false;
+    return tripMatchesRoute(stopTimeUpdates, originCode, route.originPrefixes, destinationCode, route.destinationPrefixes);
+  });
+
+  logger.push(`Candidatos origen compatibles con ruta: ${compatibleOriginCandidates.length}/${originCandidates.length}`);
+
   let finalTrains = [];
-  if (originCandidates.length >= 2) {
-    finalTrains = originCandidates.slice(0, 2);
-  } else if (originCandidates.length === 1) {
-    finalTrains = [originCandidates[0]];
-    const extra = destinationCandidates.find((candidate) => candidate.tripId !== originCandidates[0].tripId);
+  if (compatibleOriginCandidates.length >= 2) {
+    finalTrains = compatibleOriginCandidates.slice(0, 2);
+  } else if (compatibleOriginCandidates.length === 1) {
+    finalTrains = [compatibleOriginCandidates[0]];
+    const extra = destinationCandidates.find((candidate) => candidate.tripId !== compatibleOriginCandidates[0].tripId);
     if (extra) finalTrains.push(extra);
   } else {
     finalTrains = destinationCandidates.slice(0, 2);
