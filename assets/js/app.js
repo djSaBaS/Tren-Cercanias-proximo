@@ -252,6 +252,49 @@ function getStationOptions(coreProvince, locality) {
     .sort((a, b) => safeText(a.nombre).localeCompare(safeText(b.nombre), "es"));
 }
 
+// Obtenemos líneas candidatas de una estación a partir de trip updates para abrir destinos compatibles.
+function inferLinesByStationCode(stationCode, tripUpdatesJson) {
+  const entities = Array.isArray(tripUpdatesJson?.entity) ? tripUpdatesJson.entity : [];
+  const lineSet = new Set();
+  const prefixes = buildStopPrefixes(stationCode);
+
+  for (const entity of entities) {
+    const tripUpdate = entity?.tripUpdate;
+    const tripId = tripUpdate?.trip?.tripId || "";
+    if (!tripId) continue;
+    const line = extractLine(tripId);
+    if (!line) continue;
+    const stopTimeUpdates = Array.isArray(tripUpdate?.stopTimeUpdate) ? tripUpdate.stopTimeUpdate : [];
+    const hasStation = stopTimeUpdates.some((update) => matchesStopId(String(update?.stopId || ""), stationCode, prefixes));
+    if (hasStation) lineSet.add(line);
+  }
+
+  return lineSet;
+}
+
+// Construimos códigos de estación compatibles con las líneas observadas para una estación origen.
+function inferCompatibleDestinationCodes(stationCode, tripUpdatesJson) {
+  const entities = Array.isArray(tripUpdatesJson?.entity) ? tripUpdatesJson.entity : [];
+  const lineSet = inferLinesByStationCode(stationCode, tripUpdatesJson);
+  if (!lineSet.size) return new Set();
+
+  const stationCodes = new Set();
+  for (const entity of entities) {
+    const tripUpdate = entity?.tripUpdate;
+    const tripId = tripUpdate?.trip?.tripId || "";
+    if (!tripId) continue;
+    const line = extractLine(tripId);
+    if (!lineSet.has(line)) continue;
+    const stopTimeUpdates = Array.isArray(tripUpdate?.stopTimeUpdate) ? tripUpdate.stopTimeUpdate : [];
+    for (const update of stopTimeUpdates) {
+      const normalized = normalizeStopId(update?.stopId || "");
+      if (normalized.length >= 5) stationCodes.add(normalized.slice(0, 5));
+    }
+  }
+
+  return stationCodes;
+}
+
 // Rellenamos un select a partir de una lista simple.
 function fillSelectSimple(select, values, selectedValue, getLabel) {
   select.innerHTML = "";
@@ -291,22 +334,24 @@ function syncConfigUi() {
   config.locality = safeLocality;
   fillSelectSimple(localitySelect, localities, safeLocality);
 
-  const stations = getStationOptions(config.coreProvince, config.locality);
-  const stationCodes = stations.map((item) => String(item.codigo));
+  const originStations = getStationOptions(config.coreProvince, config.locality);
+  const destinationStations = getStationOptions(config.coreProvince, "");
+  const originStationCodes = originStations.map((item) => String(item.codigo));
+  const destinationStationCodes = destinationStations.map((item) => String(item.codigo));
 
-  if (!stationCodes.includes(String(config.originCode)) && stations[0]) {
-    const fallbackAtocha = stations.find((item) => safeText(item.nombre).toLowerCase().includes("atocha"));
-    config.originCode = String((fallbackAtocha || stations[0]).codigo);
+  if (!originStationCodes.includes(String(config.originCode)) && originStations[0]) {
+    const fallbackAtocha = originStations.find((item) => safeText(item.nombre).toLowerCase().includes("atocha"));
+    config.originCode = String((fallbackAtocha || originStations[0]).codigo);
   }
 
-  if (!stationCodes.includes(String(config.destinationCode)) && stations[0]) {
-    const fallbackChamartin = stations.find((item) => safeText(item.nombre).toLowerCase().includes("chamart"));
-    const fallback = fallbackChamartin || stations[Math.min(1, stations.length - 1)] || stations[0];
+  if (!destinationStationCodes.includes(String(config.destinationCode)) && destinationStations[0]) {
+    const fallbackChamartin = destinationStations.find((item) => safeText(item.nombre).toLowerCase().includes("chamart"));
+    const fallback = fallbackChamartin || destinationStations[Math.min(1, destinationStations.length - 1)] || destinationStations[0];
     config.destinationCode = String(fallback.codigo);
   }
 
-  fillStationSelect(originSelect, stations, config.originCode);
-  fillStationSelect(destinationSelect, stations, config.destinationCode);
+  fillStationSelect(originSelect, originStations, config.originCode);
+  fillStationSelect(destinationSelect, destinationStations, config.destinationCode);
 
   effectSelect.value = config.effect;
   useScheduleCheck.checked = Boolean(config.useSchedule);
@@ -333,10 +378,12 @@ function normalizeStopId(stopId) {
 }
 
 // Comprobamos si una parada de alerta encaja con nuestra estación de forma estricta.
-function matchesStopId(stopId, prefixes) {
+function matchesStopId(stopId, stationCode, prefixes) {
   const normalized = normalizeStopId(stopId);
   if (!normalized) return false;
-  return prefixes.some((prefix) => normalized.startsWith(prefix));
+  const exactCode = normalizeStopId(stationCode);
+  if (exactCode.length >= 5 && normalized.startsWith(exactCode.slice(0, 5))) return true;
+  return prefixes.some((prefix) => normalized.length < 5 && normalized.startsWith(prefix));
 }
 
 // Formateamos epoch a HH:MM.
@@ -436,12 +483,12 @@ function alertIcon(type) {
 }
 
 // Filtramos incidencias relevantes solo por parada para evitar alertas de otros núcleos con líneas homónimas.
-function getRelevantAlerts(alerts, prefixes) {
-  return alerts.filter((alert) => alert.stopIds.some((stopId) => matchesStopId(stopId, prefixes)));
+function getRelevantAlerts(alerts, stationCode, prefixes) {
+  return alerts.filter((alert) => alert.stopIds.some((stopId) => matchesStopId(stopId, stationCode, prefixes)));
 }
 
 // Extraemos candidatos por prefijos del stopId.
-function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, roleLabel, loggerInstance) {
+function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, stationCode, platformMap, roleLabel, loggerInstance) {
   const candidates = [];
   const entities = Array.isArray(tripUpdatesJson?.entity) ? tripUpdatesJson.entity : [];
   const nowEpoch = Math.floor(Date.now() / 1000);
@@ -458,9 +505,13 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, rol
     const stopTimeUpdates = Array.isArray(tripUpdate?.stopTimeUpdate) ? tripUpdate.stopTimeUpdate : [];
     if (!stopTimeUpdates.length) continue;
 
+    const exactStationCode = normalizeStopId(stationCode).slice(0, 5);
     const matchingUpdate = stopTimeUpdates.find((update) => {
+      const currentStopId = normalizeStopId(update?.stopId || "");
+      return exactStationCode && currentStopId.startsWith(exactStationCode);
+    }) || stopTimeUpdates.find((update) => {
       const currentStopId = String(update?.stopId || "");
-      return matchesStopId(currentStopId, prefixes);
+      return matchesStopId(currentStopId, stationCode, prefixes);
     });
 
     const stopId = String(matchingUpdate?.stopId || "");
@@ -483,13 +534,15 @@ function extractCandidatesByPrefixes(tripUpdatesJson, prefixes, platformMap, rol
     });
   }
 
-  const dedupedCandidates = [];
-  const seenTrips = new Set();
-  for (const candidate of candidates.sort((a, b) => a.timeEpoch - b.timeEpoch)) {
-    if (seenTrips.has(candidate.tripId)) continue;
-    seenTrips.add(candidate.tripId);
-    dedupedCandidates.push(candidate);
+  const tripMap = new Map();
+  for (const candidate of candidates) {
+    const existing = tripMap.get(candidate.tripId);
+    if (!existing || candidate.timeEpoch < existing.timeEpoch) {
+      tripMap.set(candidate.tripId, candidate);
+    }
   }
+
+  const dedupedCandidates = Array.from(tripMap.values()).sort((a, b) => a.timeEpoch - b.timeEpoch);
 
   loggerInstance.push(`Candidatos ${roleLabel} (${prefixes.join(", ")}): ${dedupedCandidates.length}`);
   return dedupedCandidates;
@@ -730,13 +783,13 @@ function readConfigFromUi() {
 
 // Cargamos la librería QR desde varios CDN para mejorar robustez en entornos restringidos.
 async function ensureQrLibrary() {
-  if (window.QRCode?.toCanvas) return;
+  if (window.QRCode?.toCanvas) return true;
   const candidateUrls = [
+    "./assets/vendor/qrcode.min.js",
     "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js",
     "https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"
   ];
 
-  let lastError = null;
   for (const candidateUrl of candidateUrls) {
     try {
       await new Promise((resolve, reject) => {
@@ -751,13 +804,13 @@ async function ensureQrLibrary() {
         document.head.appendChild(script);
       });
 
-      if (window.QRCode?.toCanvas) return;
-    } catch (error) {
-      lastError = error;
+      if (window.QRCode?.toCanvas) return true;
+    } catch {
+      // Probamos el siguiente mirror sin bloquear al usuario.
     }
   }
 
-  throw new Error(`No se pudo cargar la librería QR. Revisa conexión/CSP. Detalle: ${String(lastError?.message || lastError || "desconocido")}`);
+  return false;
 }
 
 // Renderizamos el QR de la configuración actual cargando la librería si hace falta.
@@ -768,7 +821,19 @@ async function renderQrForCurrentConfig() {
   }
   qrUrlText.value = shareUrl;
 
-  await ensureQrLibrary();
+  const qrAvailable = await ensureQrLibrary();
+  const ctx = qrCanvas.getContext("2d");
+  ctx.clearRect(0, 0, qrCanvas.width, qrCanvas.height);
+
+  if (!qrAvailable || !window.QRCode?.toCanvas) {
+    ctx.fillStyle = "#111827";
+    ctx.font = "14px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("QR no disponible en este entorno", qrCanvas.width / 2, qrCanvas.height / 2 - 8);
+    ctx.fillText("Usa el enlace de abajo para compartir", qrCanvas.width / 2, qrCanvas.height / 2 + 14);
+    return;
+  }
+
   await window.QRCode.toCanvas(qrCanvas, shareUrl, {
     width: 260,
     margin: 1,
@@ -823,8 +888,8 @@ async function refreshRealtime() {
   const platformMap = buildPlatformMap(vehiclePositions);
   logger.push(`vehicle_positions: tripId mapeados = ${platformMap.size}`);
 
-  const originCandidates = extractCandidatesByPrefixes(tripUpdates, route.originPrefixes, platformMap, "ORIGIN", logger);
-  const destinationCandidates = extractCandidatesByPrefixes(tripUpdates, route.destinationPrefixes, platformMap, "DESTINATION", logger);
+  const originCandidates = extractCandidatesByPrefixes(tripUpdates, route.originPrefixes, originCode, platformMap, "ORIGIN", logger);
+  const destinationCandidates = extractCandidatesByPrefixes(tripUpdates, route.destinationPrefixes, destinationCode, platformMap, "DESTINATION", logger);
 
   let finalTrains = [];
   if (originCandidates.length >= 2) {
@@ -839,8 +904,9 @@ async function refreshRealtime() {
 
   const linesWithAlerts = [];
   for (const train of finalTrains) {
+    const stationCode = train.role === "ORIGIN" ? originCode : destinationCode;
     const prefixes = train.role === "ORIGIN" ? route.originPrefixes : route.destinationPrefixes;
-    train.alerts = getRelevantAlerts(alerts, prefixes).map((alert) => ({
+    train.alerts = getRelevantAlerts(alerts, stationCode, prefixes).map((alert) => ({
       ...alert,
       type: classifyAlertType(alert.text)
     }));
@@ -883,6 +949,27 @@ function bindEvents() {
 
   localitySelect.addEventListener("change", () => {
     state.config.locality = localitySelect.value;
+    syncConfigUi();
+  });
+
+  originSelect.addEventListener("change", async () => {
+    state.config.originCode = originSelect.value;
+    try {
+      const tripUpdates = await loadJsonViaWorker(URL_TRIP_UPDATES);
+      const allowedDestinationCodes = inferCompatibleDestinationCodes(state.config.originCode, tripUpdates);
+      if (allowedDestinationCodes.size) {
+        const destinationStations = getStationOptions(state.config.coreProvince, "").filter((station) => allowedDestinationCodes.has(String(station.codigo)));
+        if (destinationStations.length) {
+          if (!destinationStations.some((station) => String(station.codigo) === String(state.config.destinationCode))) {
+            state.config.destinationCode = String(destinationStations[0].codigo);
+          }
+          fillStationSelect(destinationSelect, destinationStations, state.config.destinationCode);
+          return;
+        }
+      }
+    } catch {
+      // Si no se puede consultar trip_updates, mantenemos fallback completo por provincia.
+    }
     syncConfigUi();
   });
 
