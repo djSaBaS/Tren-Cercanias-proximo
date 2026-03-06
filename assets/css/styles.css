@@ -12,6 +12,7 @@
   --warn:#ffcc33;
   --radius:18px;
   --shadow:0 10px 30px rgba(16,24,40,.08);
+  --focus-outline-color:#8da2ff;
 }
 *{box-sizing:border-box;}
 body{
@@ -64,7 +65,7 @@ body{
 .primary-btn:focus-visible,
 .secondary-btn:focus-visible,
 .inc-btn:focus-visible{
-  outline:3px solid #8da2ff;
+  outline:3px solid var(--focus-outline-color);
   outline-offset:2px;
 }
 .card{

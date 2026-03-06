@@ -435,7 +435,6 @@ function alertIcon(type) {
   return "⚠️";
 }
 
-
 // Filtramos incidencias relevantes solo por parada para evitar alertas de otros núcleos con líneas homónimas.
 function getRelevantAlerts(alerts, prefixes) {
   return alerts.filter((alert) => alert.stopIds.some((stopId) => matchesStopId(stopId, prefixes)));
@@ -513,7 +512,7 @@ function applySplitFlapEffect(targetNode) {
         { transform: "rotateX(0deg)", opacity: 1 }
       ],
       {
-        duration: 2100 + Math.floor(Math.random() * 350),
+        duration: 1600 + Math.floor(Math.random() * 260),
         delay: Math.floor(Math.random() * 180),
         iterations: 1,
         easing: "cubic-bezier(.22,.7,.16,1)"
@@ -528,7 +527,7 @@ function applySplitFlapEffect(targetNode) {
         { transform: "rotateX(0deg)", opacity: 1 }
       ],
       {
-        duration: 2100 + Math.floor(Math.random() * 350),
+        duration: 1600 + Math.floor(Math.random() * 260),
         delay: 80 + Math.floor(Math.random() * 180),
         iterations: 1,
         easing: "cubic-bezier(.22,.7,.16,1)"
@@ -727,7 +726,10 @@ async function ensureQrLibrary() {
         script.src = candidateUrl;
         script.async = true;
         script.onload = () => resolve();
-        script.onerror = () => reject(new Error(`No se pudo cargar ${candidateUrl}`));
+        script.onerror = () => {
+          if (script.parentNode) script.parentNode.removeChild(script);
+          reject(new Error(`No se pudo cargar ${candidateUrl}`));
+        };
         document.head.appendChild(script);
       });
 
@@ -738,7 +740,6 @@ async function ensureQrLibrary() {
   }
 
   throw new Error(`No se pudo cargar la librería QR. Revisa conexión/CSP. Detalle: ${String(lastError?.message || lastError || "desconocido")}`);
-
 }
 
 // Renderizamos el QR de la configuración actual cargando la librería si hace falta.
