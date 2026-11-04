@@ -434,17 +434,31 @@ async function loadJsonViaWorker(targetUrl) {
 }
 
 // Construimos el mapa tripId -> andén a partir de vehicle_positions.
-function buildPlatformMap(vehiclePositionsJson) {
+function buildPlatformMap(vehiclePositionsJson, stationCode, prefixes) {
+  // Mantenemos separadas las vías deducidas de vehículos para evitar asignar vías de otras estaciones.
   const map = new Map();
+  // Accedemos a las entidades solo cuando existe un listado válido.
   const entities = Array.isArray(vehiclePositionsJson?.entity) ? vehiclePositionsJson.entity : [];
+  // Comprobamos la posición actual de cada vehículo.
   for (const entity of entities) {
+    // Leemos la circulación y su estación de referencia.
     const vehicle = entity?.vehicle;
+    // Recuperamos el identificador de circulación del vehículo.
     const tripId = vehicle?.trip?.tripId || vehicle?.trip?.trip_id || "";
+    // Recuperamos el identificador de la estación en la que se encuentra o a la que llega.
+    const stopId = String(vehicle?.stopId || vehicle?.stop_id || "");
+    // Comprobamos que el vehículo esté detenido o llegando a la estación consultada.
+    const currentStatus = String(vehicle?.currentStatus || vehicle?.current_status || "");
+    // Descartamos cualquier vehículo de otra estación o con estado no verificable.
+    if (!tripId || !matchesStopId(stopId, stationCode, prefixes) || !["INCOMING_AT", "STOPPED_AT"].includes(currentStatus)) continue;
+    // Consultamos la etiqueta pública sin asumir que contiene siempre información de vía.
     const label = vehicle?.vehicle?.label || "";
-    if (!tripId) continue;
+    // Extraemos una vía únicamente si coincide con el formato conocido del proveedor.
     const platform = extractPlatformFromLabel(label);
+    // Guardamos la vía solo para la estación actual, nunca para futuras paradas.
     if (platform) map.set(tripId, platform);
   }
+  // Entregamos las posibles vías asociadas a la estación seleccionada.
   return map;
 }
 
@@ -686,10 +700,14 @@ function renderTrains(route, trains, effect) {
     time.textContent = train.timeHHMM;
 
     const sub = createNode("div", "train-sub");
-    sub.textContent = train.role === "ORIGIN" ? `Salida prevista: ${train.timeHHMM}` : `Hora estimada en destino: ${train.timeHHMM}`;
+    // Diferenciamos claramente las salidas con recorrido comprobado de las que carecen de datos suficientes.
+    sub.textContent = train.verified
+      ? `Salida prevista: ${train.timeHHMM} · destino comprobado`
+      : "Salida del origen; destino sin verificar (no es una ruta recomendada).";
 
     const badge = createNode("div", "badge");
-    badge.textContent = `Andén/Vía ${train.platform}`;
+    // Nunca presentamos la vía derivada del vehículo como confirmación oficial del andén de salida.
+    badge.textContent = train.platform === "—" ? "Vía no disponible" : `Vía ${train.platform} (verificar en estación)`;
 
     const line = createNode("div", "line");
     line.textContent = `Línea ${train.line}`;
@@ -924,11 +942,13 @@ async function refreshRealtime() {
     logger.push("Aviso: alerts.json no disponible (no bloquea la lista).");
   }
 
-  const platformMap = buildPlatformMap(vehiclePositions);
-  logger.push(`vehicle_positions: tripId mapeados = ${platformMap.size}`);
+  // Limitamos las vías visibles a los vehículos observados en la estación de origen.
+  const platformMap = buildPlatformMap(vehiclePositions, originCode, route.originPrefixes);
+  // Registramos el número de circulaciones con vía potencialmente conocida.
+  logger.push(`vehicle_positions: tripId mapeados en origen = ${platformMap.size}`);
 
+  // Consultamos exclusivamente las salidas de la estación de origen elegida.
   const originCandidates = extractCandidatesByPrefixes(tripUpdates, route.originPrefixes, originCode, platformMap, "ORIGIN", logger);
-  const destinationCandidates = extractCandidatesByPrefixes(tripUpdates, route.destinationPrefixes, destinationCode, platformMap, "DESTINATION", logger);
 
   const tripUpdatesByTripId = new Map();
   for (const entity of Array.isArray(tripUpdates?.entity) ? tripUpdates.entity : []) {
@@ -958,16 +978,12 @@ async function refreshRealtime() {
     logger.push("Fallback: sin trips compatibles completos; se muestran salidas de origen sin validar destino.");
   }
 
-  let finalTrains = [];
-  if (selectedOriginCandidates.length >= 2) {
-    finalTrains = selectedOriginCandidates.slice(0, 2);
-  } else if (selectedOriginCandidates.length === 1) {
-    finalTrains = [selectedOriginCandidates[0]];
-    const extra = destinationCandidates.find((candidate) => candidate.tripId !== selectedOriginCandidates[0].tripId);
-    if (extra) finalTrains.push(extra);
-  } else {
-    finalTrains = destinationCandidates.slice(0, 2);
-  }
+  // Mostramos únicamente trenes identificados en la estación de origen real.
+  // Etiquetamos las circulaciones como no verificadas cuando faltan paradas para comprobar el destino.
+  const finalTrains = selectedOriginCandidates.slice(0, 2).map((candidate) => ({
+    ...candidate,
+    verified: compatibleOriginCandidates.length > 0
+  }));
 
   const linesWithAlerts = [];
   for (const train of finalTrains) {
@@ -987,14 +1003,32 @@ async function refreshRealtime() {
   renderDebug();
 }
 
+// Informamos de errores de conexión sin dejar datos anteriores aparentando estar actualizados.
+function showRealtimeError(error) {
+  // Registramos el fallo técnico en el panel de diagnóstico opcional.
+  logger.push(`ERROR al actualizar: ${String(error)}`);
+  // Mostramos una indicación de fallo comprensible sin exponer información interna al usuario.
+  statusLine.textContent = `${new Date().toLocaleTimeString("es-ES", { hour12: false })} · Datos no disponibles; reintentando…`;
+  // Eliminamos las recomendaciones anteriores cuando su actualidad ya no está garantizada.
+  trainsBox.replaceChildren();
+  // Creamos un mensaje de estado accesible y sin contenido HTML interpolado.
+  const message = createNode("p", "muted");
+  // Indicamos que la aplicación intentará volver a consultar los datos.
+  message.textContent = "No se han podido consultar los trenes en tiempo real. Se reintentará automáticamente.";
+  // Incorporamos el mensaje al panel de resultados.
+  trainsBox.appendChild(message);
+  // Actualizamos el diagnóstico para facilitar la investigación si está abierto.
+  renderDebug();
+}
+
 // Programamos el refresco periódico del panel.
 function scheduleRefresh() {
+  // Evitamos duplicar temporizadores durante la sesión.
   if (state.refreshTimer) clearInterval(state.refreshTimer);
+  // Mantenemos el reintento periódico incluso si una consulta puntual falla.
   state.refreshTimer = setInterval(() => {
-    refreshRealtime().catch((error) => {
-      logger.push(`ERROR: ${String(error)}`);
-      renderDebug();
-    });
+    // Recuperamos de forma automática la información cuando la API vuelve a estar disponible.
+    refreshRealtime().catch(showRealtimeError);
   }, REFRESH_SECONDS * 1000);
 }
 
@@ -1077,8 +1111,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     await loadStations();
     syncConfigUi();
     bindEvents();
-    await refreshRealtime();
+    // Preparamos el mecanismo de reintento antes de la primera consulta externa.
     scheduleRefresh();
+    // Gestionamos los fallos iniciales sin bloquear la recuperación automática.
+    await refreshRealtime().catch(showRealtimeError);
   } catch (error) {
     statusLine.textContent = `${new Date().toLocaleTimeString("es-ES", { hour12: false })} · Error al iniciar.`;
     trainsBox.innerHTML = `<p class="muted">No se pudo iniciar la aplicación.</p>`;
