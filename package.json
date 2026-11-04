@@ -7,7 +7,8 @@
     "lint:css": "stylelint \"assets/css/**/*.css\"",
     "lint:html": "htmlhint \"**/*.html\"",
     "test:smoke": "node tests/smoke.mjs",
-    "test": "npm run lint:js && npm run lint:css && npm run lint:html && npm run test:smoke"
+    "test": "npm run lint:js && npm run lint:css && npm run lint:html && npm run test:smoke && npm run test:worker",
+    "test:worker": "node --test tests/worker.test.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
